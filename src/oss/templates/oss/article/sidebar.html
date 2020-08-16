@@ -1,0 +1,10 @@
+<div class="list-group">
+    <a href="/article" class="list-group-item list-group-item-action">View Articles</a>
+    <a href="/article/add" class="list-group-item list-group-item-action">Add Article</a>
+    {% if form.article_id.value %}
+        <a href="/article/{{ form.article_id.value }}/edit" class="list-group-item list-group-item-action">Edit Article</a>
+    {% elif article.article_id %}
+        <a href="/article/{{ article.article_id }}/edit" class="list-group-item list-group-item-action">Edit Article</a>
+    {% endif %}
+    <a href="/api/article" class="list-group-item list-group-item-action">Developer API</a>
+</div>

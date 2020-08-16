@@ -1,0 +1,22 @@
+<div class="list-group">
+    <a href="/component/{{ component.pk }}" class="list-group-item list-group-item-action">
+      Overview
+    </a>
+    <a href="/component/{{ component.pk }}/security-policy" class="list-group-item list-group-item-action">Security Policy</a>
+    <a href="/component/{{ component.pk }}/security-advisories" class="list-group-item list-group-item-action">Security Advisories</a>
+    <a href="/component/{{ component.pk }}/health" class="list-group-item list-group-item-action">Project Health</a>
+    <a href="/component/{{ component.pk }}/project-risk" class="list-group-item list-group-item-action">Project Risk</a>
+    <a href="/component/{{ component.pk }}/security-validation" class="list-group-item list-group-item-action">Security Validation</a>
+    <a href="javascript:$('div.metadata-modal').modal()" class="list-group-item list-group-item-action {% if not component.metadata %}disabled{% endif %}"">View Metadata</a>
+    <a href="/api" class="list-group-item list-group-item-action">Developer API</a>
+    <a href="#" class="list-group-item list-group-item-action p-0">
+        <div class="d-flex w-100 justify-content-between">
+            <select class="form-control form-control-sm border-0">
+                <option value="">-- Versions --</option>
+                {% for version in component.componentversion_set.all %}
+                    <option value="{{ version.version }}">{{ version.version }}</option>
+                {% endfor %}
+          </select>
+        </div>
+    </a>
+</div>

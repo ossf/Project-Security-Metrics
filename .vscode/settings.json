@@ -1,0 +1,42 @@
+{
+    "python.languageServer": "Pylance",
+    "python.pythonPath": "project\\Scripts\\python.exe",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/*.pyc": true,
+        "**/__pycache__": true
+    },
+    "workbench.tree.indent": 12,
+    "workbench.tree.renderIndentGuides": "always",
+    "editor.rulers": [
+        100
+    ],
+    "python.linting.flake8Args": [
+        "--ignore=E501,W503"
+    ],
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+        "--enable=W0614",
+        "--disable=F0401,C0330",
+        "--load-plugins",
+        "pylint_django"
+    ],
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "100"
+    ],
+    "python.analysis.typeCheckingMode": "off",
+    "[html]": {
+        "editor.formatOnSave": false
+    },
+    "python.analysis.diagnosticMode": "openFilesOnly",
+    "python.analysis.extraPaths": [
+        "src"
+    ]
+}

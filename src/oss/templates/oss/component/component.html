@@ -1,0 +1,148 @@
+{% extends "../base.html" %}
+
+{% load static %}
+{% load cache %}
+{% load component_helpers %}
+
+{% block sidebar_bottom %}
+    {% include "oss/component/sidebar.html" %}
+{% endblock sidebar_bottom %}
+
+{% block main %}
+
+{% include "oss/component/common-top.html" %}
+
+<div class="row">
+    <div class="col">
+        <div class="card card_overview">
+            <div class="card-header">
+                <div class="float-right">
+                    <a href="javascript:alert('Not implemented.')" title="Help"><i class="far fa-question"></i></a>
+                </div>
+                <strong>Project Overview</strong>
+            </div>
+            <div class="card-body">
+                {{ component.description|safe|to_markdown }}
+            </div>
+            </div>
+    </div>
+</div>
+
+<div class="row pt-2">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <div class="float-right">
+                    <a href="javascript:alert('Not implemented.')" title="Help"><i class="far fa-question"></i></a>
+                </div>
+                <strong>Security Posture</strong>
+            </div>
+            <div class="card-body">
+
+                {% for k, v in component.get_metadata_dict.items %}
+                    <button type="button" class="btn m-4 {% if v.value %}btn-success{% else %}btn-danger{% endif %}">
+                        <i class="fas {% if v.value %}fa-check{% else %}fa-times{% endif %} fa-lg"></i>&nbsp;&nbsp;{{ k }}</button>
+                {% endfor %}
+
+                <div class="m-4">
+                    <a href="#" class="btn btn-info">Download Metadata (JSON)</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+        <div class="col-sm-3 pt-2">
+        <div class="card">
+            <div class="card-header">
+                <div class="float-right">
+                    <a href="javascript:alert('Not implemented.')" title="Edit"><i class="far fa-edit"></i></a>
+                </div>
+                <strong>Associated URLs</strong>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-condensed">
+                    {% for url in component.urls %}
+                        {% if not url.is_archive %}
+                            <li class="list-group-item"><a href="{{ url.url }}">{{ url.url }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 pt-2">
+            <div class="card">
+                <div class="card-header">
+                    <div class="float-right">
+                        <a href="javascript:alert('Not implemented.')" title="Edit"><i class="far fa-edit"></i></a>
+                        <a href="/docs/active-maintainers" title="Learn More..."><i class="fa fa-question-circle"></i></a>
+                    </div>
+                    <strong>Active Maintainers</strong>
+                </div>
+                <div class="card-body">
+                    {% if component.maintainers %}
+                        <div class="card-deck">
+                            {% for maintainer in component.maintainers|slice:":8" %}
+                                {% if maintainer.avatar_url %}
+                                    <a href="{{ maintainer.get_absolute_url}}">
+                                    <div class="card float-left" style="border: 0; width: 8rem;flex:inherit" title="{{ maintainer.email }}">
+                                        <img class="card-img-top ml-auto mr-auto" src="{{maintainer.avatar_url }}" alt="{{ maintainer.emails.0 }}" style="width: 96px;border-radius: 48px">
+                                        <div class="card-body text-center" style="background-color:rgba(248,245,240,0.25); border-top: 1px solid #ccc; padding: 0.40rem;">
+                                            <div class="small">{{ maintainer.names.0|default:"" }}</div>
+                                        </div>
+                                    </div>
+                                    </a>
+                                {% else %}
+                                    <a href="{{ maintainer.get_absolute_url}}">
+                                    <div class="card float-left" style="width: 8rem;flex:inherit" title="{{ maintainer }}">
+                                        <img class="card-img-top ml-auto mr-auto" src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y" alt="{{ maintainer }}" style="width: 96px;border-radius: 48px;">
+                                        <div class="card-body text-center" style="background-color:rgba(248,245,240,0.25); border-top: 1px solid #ccc; padding: 0.40rem;">
+                                            <div class="small">{{ maintainer.name|default:maintainer }}</div>
+                                        </div>
+                                    </div>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <strong>Alert!</strong>
+                            This project has not had a commit in over a year.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3 pt-2">
+        <div class="card">
+            <div class="card-header">
+                <div class="float-right">
+                    <a href="javascript:alert('Not implemented.')" title="Edit"><i class="far fa-edit"></i></a>
+                </div>
+                <strong>Release Information</strong>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    This component has had
+                    <strong>{{ component.componentversion_set.all|length }}</strong>
+                    versions released.
+                </p>
+                <p class="card-text">
+                    {% with version=component.get_latest_version %}
+                        The latest release is
+                        <a href="{{ version.get_absolute_url }}">{{ version.version }}</a>
+                    {% endwith %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% with metadata=component.metadata %}
+    {% include "oss/widget-metadata.html" %}
+{% endwith %}
+
+{% endblock main %}

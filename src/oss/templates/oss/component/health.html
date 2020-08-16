@@ -1,0 +1,40 @@
+{% extends "../base.html" %}
+
+{% load static %}
+{% load cache %}
+{% load component_helpers %}
+
+{% block sidebar_bottom %}
+    {% include "oss/component/sidebar.html" %}
+{% endblock sidebar_bottom %}
+
+{% block main %}
+    {% include "oss/component/common-top.html" %}
+
+    <div class="col-3">
+        <div class="card">
+            <div class="card-header">
+                <strong>Health</strong>
+            </div>
+            <div class="card-body">
+                <p>Project health is calculated by ...</p>
+                <table class="table">
+                    <tr>
+                        <td>Overall Project Health</td>
+                        <td>
+                            <span class="badge badge-success">
+                                {{ component|get_metadata:"health.overall" }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Overall Project Risk</td>
+                        <td>
+                            <span class="badge badge-warning">C</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+          </div>
+        </div>
+    </div>
+{% endblock main %}

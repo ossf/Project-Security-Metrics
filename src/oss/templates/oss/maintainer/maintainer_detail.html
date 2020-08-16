@@ -1,0 +1,128 @@
+{% extends "../base.html" %}
+
+{% load static %}
+{% load cache %}
+{% load component_helpers %}
+
+{% block sidebar_bottom %}
+    {% include "oss/maintainer/sidebar.html" %}
+{% endblock sidebar_bottom %}
+
+{% block main %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h2 class="h2">
+        <strong>Maintainer</strong>
+        <span class="disabled" style="color: #ccc">|</span>
+        {{ maintainer.names.0 }}
+    </h2>
+</div>
+
+<div class="row">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <div class="float-right">
+                    <a href="/article/{{ article.article_id }}/edit" title="Edit"><i class="far fa-edit"></i></a>
+                </div>
+                <strong>Personal Details</strong>
+            </div>
+            <div class="card-body">
+                <div class="float-right">
+                    <img src="{{ maintainer.avatar_url }}" style="width: 96px;border-radius:48px"/>
+                </div>
+
+                <h5>Name</h5>
+                {% for name in maintainer.names %}
+                    <p>{{ name }}</p>
+                {% empty %}
+                    <p><i>Name not found.</i></p>
+                {% endfor %}
+
+                <h5>E-Mail Address</h5>
+                {% for email in maintainer.emails %}
+                    <p>{{ email }}</p>
+                {% empty %}
+                    <p><i>E-Mail address not found.</i></p>
+                {% endfor %}
+
+                <h5>Website</h5>
+                {% if maintainer.url %}
+                    <p><a href="{{ maintainer.url}}" rel="noopener noreferrer">{{ maintainer.url }}</a></p>
+                {% else %}
+                    <p><i>No website found.</i></p>
+                {% endif %}
+
+                <h5>Related Maintainers</h5>
+                <ul class="list-group">
+                    {% for maintainer in related %}
+                        <li class="list-group-item"><a href="{{ maintainer.get_absolute_url }}">{{ maintainer.name }} ({{ maintainer.email }})</a></li>
+                    {% empty %}
+                        <li class="list-group-item"><i>No related maintainers found.</i></a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="float-right">
+                    <a href="/article/{{ article.article_id }}/edit" title="Edit"><i class="far fa-edit"></i></a>
+                </div>
+                <strong>Contributes to Projects</strong>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tbody>
+                        {% for component in components.all %}
+                            <tr>
+                                <td><a href="{{ component.get_absolute_url }}">{{ component.name }}</a></td>
+                            </tr></td>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-2">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">
+                        <strong>Metadata</strong>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <tr>
+                                <th>Status</th>
+                                <td>{{ article.current.state }}</td>
+                            </tr>
+                            <tr>
+                                <th>Last Updated</th>
+                                <td>{{ article.current.updated_dt|date }} by {{ article.updated_by }}</td>
+                            </tr>
+                            <tr>
+                                <th>History</th>
+                                <td>
+                                    <select class="form-control border-0">
+                                        {% for revision in revisions.all %}
+                                            <option value="{{ revision.article_revision_id }}">{{ revision.updated_dt }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% with metadata=maintainer.metadata %}
+    {% include "oss/widget-metadata.html" %}
+{% endwith %}
+
+{% endblock main %}

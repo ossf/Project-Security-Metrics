@@ -1,0 +1,61 @@
+{% extends "./index.html" %}
+
+{% block body %}
+<div class="container-fluid" style="padding-left: 0px; padding-right: 0">
+    <div class="row">
+        <div class="col p-0">
+            <div class="jumbotron jumbotron-fluid" style="background-color:#ff9f00;color:#ffe; text-shadow:0px 0px 15px #666">
+                <div class="container text-center">
+                    <h1 class="display-4">Open Source Project Security Metrics</h1>
+                    <h3>Justified Trust in Open Source</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-3">
+            <h3>Recently Updated Projects</h3>
+            <table class="table" style="font-size: 1.2em">
+                {% for component in components %}
+                    <tr>
+                        <td><a href="{{ component.get_absolute_url }}">{{ component.package_type }} {{ component.name }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-3">
+            <h3>Articles</h3>
+            <table class="table" style="font-size: 1.2em">
+                {% for article in articles %}
+                    <tr>
+                        <td><a href="{{ article.get_absolute_url }}">{{ article.current.title|default:article }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-3"></div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block footer %}
+<footer class="container-fluid footer">
+    <nav class="navbar fixed-bottom">
+        <div class="row" style="width: 100%;">
+            <div class="col-3"></div>
+            <div class="col-4 p-4" style="max-width: 700px">
+                Copyright © 2020 The Linux Foundation® . All rights reserved. The Linux Foundation has
+                registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation,
+                please see our
+                <a href="https://www.linuxfoundation.org/trademark-usage" target="_blank" rel="noopener noreferrer">Trademark Usage</a>
+                page. Linux is a registered trademark of Linus Torvalds.
+                <a href="http://www.linuxfoundation.org/privacy">Privacy Policy</a> and
+                <a href="http://www.linuxfoundation.org/terms">Terms of Use</a>.
+            </div>
+            <div class="col-5"></div>
+        </div>
+    </nav>
+</footer>
+{% endblock footer %}
