@@ -1,28 +1,22 @@
-# OSSF Project/WG Template
+# Security Metrics
 
-Anyone is welcome to join our open discussions related to the group's mission and charter.
+The purpose of this project is to collect, organize, and provide interesting security metrics
+for open source projects to stakeholders, including users.
 
-## Objective
+This project is in early development and we welcome community support. For more information or
+to get involved, please see our [workgroup](https://github.com/ossf/wg-identifying-security-threats)
+page.
 
-Our objective to make enlightening open source security dashboards!
+## Status
 
-## Vision
+While this project is currently in **early development**, a test website is available at
+[https://openssf-metric-alpha1.westus.cloudapp.azure.com/](https://openssf-metric-alpha1.westus.cloudapp.azure.com/).
+This website may be reset at any time (do not rely on it in any way).
 
-Our vision is to improve the perception of security in open source software.
+## Developement
 
-# Governance
+If you'd like to build locally, you can follow TODO instructions.
 
-The [CHARTER.md](CHARTER.md) outlines the scope and governance of our group activities.
+## Contact
 
-## Communications
-
-* [Meeting Minutes](https://docs.google.com/document/d/1uXQI1vI5_HyOvxHMexrnTY_ruBrynbPl5yOd1UM4g3A/edit#heading=h.yworp6sxzb6g)
-* TODO email list, github discussion
-
-## Meeting times
-
-<link to calendar>
-
-## Thanks
-
-This template was inspired by the work of the [CNCF SIG Security](https://github.com/cncf/sig-security) community.
+For more information, please contact us (TODO).

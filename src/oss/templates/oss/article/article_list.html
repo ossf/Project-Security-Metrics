@@ -1,0 +1,53 @@
+{% extends "../base.html" %}
+
+{% load static %}
+{% load cache %}
+
+{% block sidebar_bottom %}
+    {% include "oss/article/sidebar.html" %}
+{% endblock sidebar_bottom %}
+
+{% block main %}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h2 class="h2">
+        <strong>Articles</strong>
+    </h2>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <strong>Articles</strong>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Updated Date</th>
+                            <th>Updated By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for article in articles %}
+                        <tr>
+                            <td>
+                                <a href="{{ article.current.get_absolute_url }}">{{ article.current.title }}</a>
+                            </td>
+                            <td>
+                                {{ article.current.updated_dt }}
+                            </td>
+                            <td>
+                                {{ article.current.updated_by}}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock main %}

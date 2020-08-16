@@ -1,0 +1,111 @@
+{% extends "../base.html" %}
+
+{% load static %}
+{% load cache %}
+{% load component_helpers %}
+
+{% block sidebar_bottom %}
+    {% include "oss/component/sidebar.html" %}
+{% endblock sidebar_bottom %}
+
+{% block main %}
+    {% include "oss/component/common-top.html" %}
+<div class="row">
+    <div class="col-3">
+        <div class="row" style="max-height: 100%; overflow: auto">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="float-right">
+                            <a href="javascript:alert('Not implemented.')" title="Edit"><i class="far fa-edit"></i></a>
+                        </div>
+                        <strong>Security Advisories</strong>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm mb-4">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>CPE Identifiers</th>
+                                </tr>
+                            </thead>
+                            {% for cpe in cpe_list|dictsort:"name" %}
+                            <tr>
+                                <td><a href="?cpe_id={{ cpe.cpe_id }}">{{ cpe.name }}</a></td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                        {% if cve_list %}
+                            <table class="table table-sm mb-0">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>CVE Identifier</th>
+                                    </tr>
+                                </thead>
+                                {% for cve in cve_list %}
+                                <tr>
+                                    <td>
+                                        <strong><a href="?cpe_id={{ cpe_id }}&cve_id={{ cve.cve_id }}">{{ cve }}</a></strong>
+                                        <p>{{ cve.title }}</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </table>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-9">
+        <div class="card">
+            <div class="card-header">
+                <div class="float-right">
+                    <a href="javascript:alert('Not implemented.')" title="Edit"><i class="far fa-edit"></i></a>
+                </div>
+                <strong>CVE information</strong>
+            </div>
+            <div class="card-body">
+                {% if cve %}
+                    <h4><a href="https://nvd.nist.gov/vuln/detail/{{ cve.cve_ext_id }}" target="_blank" rel="noopener noreferrer">{{ cve.cve_ext_id }}</a></h4>
+                    <table class="table table-sm">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th colspan="2">References</th>
+                            </tr>
+                        </thead>
+                        {% for reference in cve.raw.cve.references.reference_data %}
+                            <tr>
+                                <td><a href="{{ reference.url }}" target="_blank" rel="noopener noreferrer">{{ reference.name }}</a></td>
+                                <td>
+                                    {% for tag in reference.tags %}
+                                        <span class="badge badge-pill badge-info">{{ tag }}</span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+
+                    <h5>Impact</h5>
+                    <table>
+                        <tr>
+                            <th>Vector</th>
+                            <td>{{ cve.raw.impact.baseMetricV3.cvssV3.vectorString }}</td>
+                        </tr>
+                        <tr>
+                            <th>Exploitability</th>
+                            <td>{{ cve.raw.impact.baseMetricV3.exploitabilityScore }}</td>
+                        </tr>
+                        <tr>
+                            <th>Impact</th>
+                            <td>{{ cve.raw.impact.baseMetricV3.impactScore }}</td>
+                        </tr>
+                    </table>
+                {% else %}
+                    <i>Choose a CPE and then a CVE from the left.</i>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock main %}

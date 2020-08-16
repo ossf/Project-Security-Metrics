@@ -1,0 +1,49 @@
+{% extends "../base.html" %}
+
+{% load static %}
+{% load cache %}
+{% load component_helpers %}
+
+{% block sidebar_bottom %}
+    {% include "oss/component/sidebar.html" %}
+{% endblock sidebar_bottom %}
+
+{% block main %}
+    {% include "oss/component/common-top.html" %}
+    <div class="row">
+
+        <div class="col-3">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Typo-Squatting</strong>
+                </div>
+                <div class="card-body">
+                    <p>Similarly-Named Projects</p>
+                    <ul class="list-group list-group-condensed">
+                        {% for component_name in component|get_metadata:"similarly-named-projects" %}
+                            <li class="list-group-item"><a href="#">{{ component_name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3">
+            <div class="card">
+                <div class="card-header">
+                    <strong>Characteristics</strong>
+                </div>
+                <div class="card-body">
+                    <p>The following characteristics were identified by <a href="#">Microsoft
+                        Application Inspector</a>.
+                    </a></p>
+                    <ul class="list-group list-group-condensed">
+                        {% for tag in component|get_metadata:"tool.applicationinspector.tags" %}
+                            <li class="list-group-item"><a href="#">{{ tag }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}

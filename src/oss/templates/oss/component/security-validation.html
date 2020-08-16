@@ -1,0 +1,81 @@
+{% extends "../base.html" %}
+
+{% load static %}
+{% load cache %}
+{% load component_helpers %}
+
+{% block sidebar_bottom %}
+    {% include "oss/component/sidebar.html" %}
+{% endblock sidebar_bottom %}
+
+{% block main %}
+    {% include "oss/component/common-top.html" %}
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <div class="float-right">
+                    <a href="javascript:alert('Not implemented.')" title="Edit"><i class="far fa-edit"></i></a>
+                </div>
+                <strong>Security Audit Reports</strong>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Review Title</th>
+                            <th>Published By</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    {% for review in component.reviews %}
+                    <tr>
+                        <td><a href="{{ review.get_absolute_url }}">{{ review.title }}</a></td>
+                        <td>{{ review.published_by }}</td>
+                        <td>{{ review.published_dt|date }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <div class="float-right">
+                    <a href="javascript:alert('Not implemented.')" title="Edit"><i class="far fa-edit"></i></a>
+                </div>
+                <strong>Static Analysis</strong>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>Tool</th>
+                            <th>Download</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td>CodeQL</td>
+                        <td>
+                            <a href="https://lgtm.com/search?q={{ component.name }}" target="_blank" rel="noopener noreferrer">
+                                View on LGTM.com
+                            </a>
+                        </td>
+                        <td>July 2020</td>
+                    </tr>
+                    <tr>
+                        <td>OSS Fuzz</td>
+                        <td><a href="https://bugs.chromium.org/p/oss-fuzz/issues/list?q=-status%3AWontFix%2CDuplicate%20-component%3AInfra%20{{ component.name|lower }}&can=1">View on OSS Fuzz</a></td>
+                        <td>n/a</td>
+                    </tr>
+                    <tr>
+                        <td>Coverity Scan</td>
+                        <td><a href="https://scan.coverity.com/projects?utf8=%E2%9C%93&search={{ component.name|lower }}">View on scan.coverity.com</a></td>
+                        <td>n/a</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock main %}

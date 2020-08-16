@@ -1,0 +1,7 @@
+<div class="list-group">
+    <a href="/maintainer/{{ maintainer.pk }}" class="list-group-item list-group-item-action">
+      Overview
+    </a>
+    <a href="javascript:$('div.metadata-modal').modal()" class="list-group-item list-group-item-action {% if not maintainer.metadata %}disabled{% endif %}">View Metadata</a>
+    <a href="/api/maintainer" class="list-group-item list-group-item-action">Developer API</a>
+</div>
