@@ -7,6 +7,7 @@ src/oss/static/oss/resources/
 # Edit at https://www.toptal.com/developers/gitignore?templates=django
 
 ### Django ###
+.env
 *.log
 *.pot
 *.pyc

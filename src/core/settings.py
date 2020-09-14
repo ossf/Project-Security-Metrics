@@ -2,6 +2,7 @@ import os
 import sys
 
 import core.settings_local
+from core.settings_local import FASTSQUAT_API_ENDPOINT, FASTSQUAT_API_TOKEN
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -131,4 +132,20 @@ LOGGING = {
     },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+        "LOCATION": "c:/temp/django-cache",
+    }
+}
+
 GITHUB_TOKENS = core.settings_local.GITHUB_TOKENS
+
+# FastSquat TypoSquatting Service
+FASTSQUAT_API_ENDPOINT = core.settings_local.FASTSQUAT_API_ENDPOINT
+FASTSQUAT_API_TOKEN = core.settings_local.FASTSQUAT_API_TOKEN
+
+INBOUND_JOB_QUEUE_CONNECTION_STRING = core.settings_local.INBOUND_JOB_QUEUE_CONNECTION_STRING
+OUTBOUND_JOB_QUEUE_CONNECTION_STRING = core.settings_local.OUTBOUND_JOB_QUEUE_CONNECTION_STRING
+INBOUND_JOB_QUEUE_NAME = core.settings_local.INBOUND_JOB_QUEUE_NAME
+OUTBOUND_JOB_QUEUE_NAME = core.settings_local.OUTBOUND_JOB_QUEUE_NAME

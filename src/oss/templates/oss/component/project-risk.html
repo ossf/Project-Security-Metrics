@@ -15,15 +15,21 @@
         <div class="col-3">
             <div class="card">
                 <div class="card-header">
-                    <strong>Typo-Squatting</strong>
+                    <strong>Similarly-Named Projects</strong>
                 </div>
                 <div class="card-body">
-                    <p>Similarly-Named Projects</p>
-                    <ul class="list-group list-group-condensed">
-                        {% for component_name in component|get_metadata:"similarly-named-projects" %}
-                            <li class="list-group-item"><a href="#">{{ component_name }}</a></li>
+                    <table class="table table-sm table-striped">
+                        {% for candidate in component|get_metadata:"similarly-named-projects" %}
+                            <tr>
+                                <td>
+                                    <a href="/search?q=pkg:{{ candidate.type }}/{{ candidate.name }}">{{ candidate.name }}</a>
+                                </td>
+                                <td>
+                                    {{ candidate.reason }}
+                                </td>
+                            </tr>
                         {% endfor %}
-                    </ul>
+                    </table>
                 </div>
             </div>
         </div>
@@ -34,9 +40,10 @@
                     <strong>Characteristics</strong>
                 </div>
                 <div class="card-body">
-                    <p>The following characteristics were identified by <a href="#">Microsoft
-                        Application Inspector</a>.
-                    </a></p>
+                    <p>
+                        The following characteristics were identified by
+                        <a href="https://github.com/Microsoft/ApplicationInspector">Microsoft Application Inspector</a>.
+                    </p>
                     <ul class="list-group list-group-condensed">
                         {% for tag in component|get_metadata:"tool.applicationinspector.tags" %}
                             <li class="list-group-item"><a href="#">{{ tag }}</a></li>

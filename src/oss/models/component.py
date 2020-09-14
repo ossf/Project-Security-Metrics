@@ -78,6 +78,7 @@ class Component(MetadataMixin, TrackingFieldsMixin):
 
     @property
     def reviews(self):
+        """Gets all active reviews associated with this Component."""
         return (
             Review.objects.filter(versions__component=self)
             .exclude(state=ReviewState.REMOVED)

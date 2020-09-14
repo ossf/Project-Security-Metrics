@@ -6,7 +6,6 @@ from enum import Enum
 from typing import Any
 
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
 
@@ -51,7 +50,7 @@ class MetadataMixin(models.Model):
     }
     """
 
-    metadata = JSONField(null=True, blank=True)
+    metadata = models.JSONField(null=True, blank=True)
 
     class Meta:
         abstract = True
@@ -99,7 +98,7 @@ class MetadataMixin(models.Model):
         self.metadata[metadata_type.name][key] = payload
         return True
 
-    def get_metadata(self, key: str, metadata_type=None) -> Any:
+    def get_metadata(self, key: str, metadata_type=None, value_only=True) -> Any:
         """Retrieve metadata from the most specific location."""
         if key is None:
             raise KeyError("Missing key.")
@@ -114,16 +113,47 @@ class MetadataMixin(models.Model):
                 if metadata_type.name not in self.metadata:
                     continue
                 result = self.metadata[metadata_type.name].get(key)
-                if result and "value" in result:
-                    return result.get("value")
+                if result:
+                    if value_only:
+                        if "value" in result:
+                            return result.get("value")
+                        else:
+                            continue
+                    else:
+                        return result
 
         else:  # For checking specific metadata types
             if metadata_type.name in self.metadata:
                 result = self.metadata[metadata_type.name].get(key)
-                if result and "value" in result:
-                    return result.get("value")
+                if result:
+                    if value_only:
+                        if "value" in result:
+                            return result.get("value")
+                    else:
+                        return result
 
         return None  # If not found
+
+    def get_metadata_expiration(self, key: str, metadata_type=None) -> datetime.datetime:
+        """Gets the expiration of the given metadata key.
+
+        Args:
+            key: metadata key to examine
+            metadata_type: metadata type to use. If None <default>, then searches all types.
+
+        Return:
+            If the key is not found, None.
+            If the key has a valid expiration date, that datetime.
+            If the key does not have a valid expiration date, None.
+        """
+        metadata = self.get_metadata(key, metadata_type, value_only=False)
+        if metadata is None:
+            return None
+
+        try:
+            return datetime.fromisoformat(metadata.get("expiration"))
+        except:
+            return None
 
     @property
     def get_metadata_dict(self):

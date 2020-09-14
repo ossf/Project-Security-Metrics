@@ -44,6 +44,15 @@
                         <i class="fas {% if v.value %}fa-check{% else %}fa-times{% endif %} fa-lg"></i>&nbsp;&nbsp;{{ k }}</button>
                 {% endfor %}
 
+                <!-- CII Metadata -->
+                {% with badge_data=component|get_metadata:"BadgeData" %}
+                    {% if badge_data %}
+                        <img src="https://bestpractices.coreinfrastructure.org/projects/{{ badge_data.id }}/badge.svg"/>
+                    {% else %}
+                        No CII data.
+                    {% endif %}
+                {% endwith %}
+
                 <div class="m-4">
                     <a href="#" class="btn btn-info">Download Metadata (JSON)</a>
                 </div>

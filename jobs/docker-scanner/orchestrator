@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd /opt/scanner
+source /opt/scanner-venv/bin/activate
+./orchestrator.py
