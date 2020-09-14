@@ -35,7 +35,8 @@ class OssConfig(AppConfig):
         return
 
     def _install_requests_cache(self):
-        requests_cache.install_cache("requests-cache")
+        pass
+        # requests_cache.install_cache("requests-cache")
 
     def _register_models_admin_config(self):
         models = apps.get_models()

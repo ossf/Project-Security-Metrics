@@ -30,7 +30,8 @@ class Command(BaseCommand):
 
         job_name = options.get("job_name")
         from oss.jobs.active_maintainers import ActiveMaintainerJob
+        from oss.jobs.typo_squatting import TypoSquattingJob
 
-        job = ActiveMaintainerJob()
+        job = TypoSquattingJob()
         job.run()
         logger.info("Completed exec project.")
