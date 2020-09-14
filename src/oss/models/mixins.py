@@ -6,7 +6,6 @@ from enum import Enum
 from typing import Any
 
 from django.contrib.auth.models import User
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils import timezone
 
@@ -51,7 +50,7 @@ class MetadataMixin(models.Model):
     }
     """
 
-    metadata = JSONField(null=True, blank=True)
+    metadata = models.JSONField(null=True, blank=True)
 
     class Meta:
         abstract = True
