@@ -11,6 +11,8 @@ router.register(r"components", api.ComponentViewSet)
 urlpatterns = [
     path("api/", include(router.urls)),
     path("", home.home),
+    # Components
+    path("component/add", component.add_component),
     path("component/<uuid:component_id>", component.show_component),
     path("component/<uuid:component_id>/security-validation", component.show_security_validation),
     path("component/<uuid:component_id>/security-advisories", component.show_security_advisories),

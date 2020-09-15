@@ -9,6 +9,7 @@ from django.core.cache import cache
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
+from core.settings import DEFAULT_QUEUE_WORK_COMPLETE
 from oss.models.component import Component
 from oss.models.mixins import MetadataType
 from oss.models.url import Url
@@ -36,7 +37,7 @@ class Command(BaseCommand):
             logger.info("No jobs defined in configuration, nothing to load.")
             return
 
-        job_queue = JobQueue()
+        job_queue = JobQueue(DEFAULT_QUEUE_WORK_COMPLETE)
         message = job_queue.receive_message()
 
         if message is None:

@@ -7,7 +7,7 @@ Views related to a Component.
 
 import json
 import logging
-from uuid import UUID
+import uuid
 
 from django.http import (
     HttpRequest,
@@ -16,20 +16,23 @@ from django.http import (
     HttpResponseNotFound,
     JsonResponse,
 )
+from django.http.response import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
+from core.settings import DEFAULT_QUEUE_WORK_IMPORT
 from oss.models.artifact import Artifact
 from oss.models.component import Component
 from oss.models.cve import CPE, CVE
+from oss.utils.job_queue import JobQueue
 
 logger = logging.getLogger(__name__)
 
 
 @require_http_methods(["GET"])
-def show_component(request: HttpRequest, component_id: UUID) -> HttpResponse:
+def show_component(request: HttpRequest, component_id: uuid.UUID) -> HttpResponse:
     """Shows a component.
 
     Args:
@@ -48,7 +51,7 @@ def show_component(request: HttpRequest, component_id: UUID) -> HttpResponse:
 
 
 @require_http_methods(["GET"])
-def show_security_validation(request: HttpRequest, component_id: UUID) -> HttpResponse:
+def show_security_validation(request: HttpRequest, component_id: uuid.UUID) -> HttpResponse:
     try:
         component = Component.objects.get(component_id=component_id)
     except Component.DoesNotExist:
@@ -59,7 +62,7 @@ def show_security_validation(request: HttpRequest, component_id: UUID) -> HttpRe
 
 
 @require_http_methods(["GET"])
-def show_health(request: HttpRequest, component_id: UUID) -> HttpResponse:
+def show_health(request: HttpRequest, component_id: uuid.UUID) -> HttpResponse:
     try:
         component = Component.objects.get(component_id=component_id)
     except Component.DoesNotExist:
@@ -70,7 +73,7 @@ def show_health(request: HttpRequest, component_id: UUID) -> HttpResponse:
 
 
 @require_http_methods(["GET"])
-def show_security_advisories(request: HttpRequest, component_id: UUID) -> HttpResponse:
+def show_security_advisories(request: HttpRequest, component_id: uuid.UUID) -> HttpResponse:
     """Show security advisories for the given Component.
 
     Args:
@@ -97,7 +100,7 @@ def show_security_advisories(request: HttpRequest, component_id: UUID) -> HttpRe
 
 
 @require_http_methods(["GET"])
-def show_security_policy(request: HttpRequest, component_id: UUID) -> HttpResponse:
+def show_security_policy(request: HttpRequest, component_id: uuid.UUID) -> HttpResponse:
     component = Component.objects.get(component_id=component_id)
 
     result = {"component": component}
@@ -105,11 +108,37 @@ def show_security_policy(request: HttpRequest, component_id: UUID) -> HttpRespon
 
 
 @require_http_methods(["GET"])
-def show_project_risk(request: HttpRequest, component_id: UUID) -> HttpResponse:
+def show_project_risk(request: HttpRequest, component_id: uuid.UUID) -> HttpResponse:
     component = Component.objects.get(component_id=component_id)
 
     result = {"component": component}
     return render(request, "oss/component/project-risk.html", result)
+
+
+@require_http_methods(["GET", "POST"])
+def add_component(request: HttpRequest) -> HttpResponse:
+    if request.method == "GET":
+        # Show the form
+        return render(request, "oss/component/add.html", {})
+
+    elif request.method == "POST":
+        # Add components to the queue
+        component_list = request.POST.get("component_list").splitlines()
+        job_queue = JobQueue(DEFAULT_QUEUE_WORK_IMPORT)
+
+        for component in component_list:
+            correlation_id = str(uuid.uuid4())
+            job_queue.send_message(
+                {
+                    "message-type": "job-request",
+                    "job-name": "import-component",
+                    "target": component,
+                    "correlation-id": correlation_id,
+                }
+            )
+        return HttpResponseRedirect("/component/add?message=OK")  # FIXME
+    else:
+        return HttpResponseBadRequest("Unexpected method.")
 
 
 @require_http_methods(["POST"])
@@ -134,7 +163,7 @@ def api_set_component_metadata(request: HttpRequest) -> HttpResponse:
 
 @never_cache
 @require_http_methods(["GET"])
-def api_show_component(request: HttpRequest, component_id: UUID) -> HttpResponse:
+def api_show_component(request: HttpRequest, component_id: uuid.UUID) -> HttpResponse:
     """Shows a component.
 
     Args:

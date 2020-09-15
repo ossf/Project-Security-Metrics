@@ -1,14 +1,20 @@
+"""
+Global Settings
+
+Per-environment settings are read from a .env file.
+"""
 import os
 import sys
 
-import core.settings_local
-from core.settings_local import FASTSQUAT_API_ENDPOINT, FASTSQUAT_API_TOKEN
+from dotenv import load_dotenv
+
+load_dotenv(verbose=True)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = core.settings_local.SECRET_KEY
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = core.settings_local.DEBUG
+DEBUG = os.getenv("DEBUG")
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -63,11 +69,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
-
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-DATABASES = core.settings_local.DATABASES
+# Database Information
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.getenv("DATABASE_NAME"),
+        "USER": os.getenv("DATABASE_USER"),
+        "PASSWORD": os.getenv("DATABASE_PASSWORD"),
+        "HOST": os.getenv("DATABASE_HOST"),
+        "PORT": os.getenv("DATABASE_PORT"),
+    }
+}
 
 
 # Password validation
@@ -82,22 +94,13 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # Internationalization
-# https://docs.djangoproject.com/en/3.0/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
-
 STATIC_URL = "/static/"
 
 # Logging
@@ -120,7 +123,7 @@ LOGGING = {
         "file": {
             "level": "DEBUG",
             "class": "logging.FileHandler",
-            "filename": "ossum-application.log",
+            "filename": os.getenv("LOG_FILENAME"),
             "formatter": "verbose",
             "encoding": "utf-8",
         },
@@ -132,20 +135,23 @@ LOGGING = {
     },
 }
 
-CACHES = {
-    "default": {
-        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-        "LOCATION": "c:/temp/django-cache",
+if os.getenv("CACHE_ENABLED"):
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
+            "LOCATION": os.getenv("CACHE_FILENAME"),
+        }
     }
-}
 
-GITHUB_TOKENS = core.settings_local.GITHUB_TOKENS
+# Tokens for accessing the GitHub API
+GITHUB_TOKENS = os.getenv("GITHUB_TOKENS")
 
-# FastSquat TypoSquatting Service
-FASTSQUAT_API_ENDPOINT = core.settings_local.FASTSQUAT_API_ENDPOINT
-FASTSQUAT_API_TOKEN = core.settings_local.FASTSQUAT_API_TOKEN
+# FastSquat Typo-Squatting Service
+FASTSQUAT_API_ENDPOINT = os.getenv("FASTSQUAT_API_ENDPOINT")
+FASTSQUAT_API_TOKEN = os.getenv("FASTSQUAT_API_TOKEN")
 
-INBOUND_JOB_QUEUE_CONNECTION_STRING = core.settings_local.INBOUND_JOB_QUEUE_CONNECTION_STRING
-OUTBOUND_JOB_QUEUE_CONNECTION_STRING = core.settings_local.OUTBOUND_JOB_QUEUE_CONNECTION_STRING
-INBOUND_JOB_QUEUE_NAME = core.settings_local.INBOUND_JOB_QUEUE_NAME
-OUTBOUND_JOB_QUEUE_NAME = core.settings_local.OUTBOUND_JOB_QUEUE_NAME
+# Work Queue
+DEFAULT_QUEUE_CONNECTION_STRING = os.getenv("DEFAULT_QUEUE_CONNECTION_STRING")
+DEFAULT_QUEUE_WORK_TO_DO = os.getenv("DEFAULT_QUEUE_WORK_TO_DO")
+DEFAULT_QUEUE_WORK_COMPLETE = os.getenv("DEFAULT_QUEUE_WORK_COMPLETE")
+DEFAULT_QUEUE_WORK_IMPORT = os.getenv("DEFAULT_QUEUE_WORK_IMPORT")
