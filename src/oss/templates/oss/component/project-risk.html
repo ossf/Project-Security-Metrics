@@ -19,16 +19,20 @@
                 </div>
                 <div class="card-body">
                     <table class="table table-sm table-striped">
-                        {% for candidate in component|get_metadata:"similarly-named-projects" %}
-                            <tr>
-                                <td>
-                                    <a href="/search?q=pkg:{{ candidate.type }}/{{ candidate.name }}">{{ candidate.name }}</a>
-                                </td>
-                                <td>
-                                    {{ candidate.reason }}
-                                </td>
-                            </tr>
-                        {% endfor %}
+                        {% with similarly_named_projects=component|get_metadata:"similarly-named-projects" %}
+                            {% for candidate in similarly_named_projects %}
+                                <tr>
+                                    <td>
+                                        <a href="/search?q=pkg:{{ candidate.type }}/{{ candidate.name }}">{{ candidate.name }}</a>
+                                    </td>
+                                    <td>
+                                        {{ candidate.reason }}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr><td><i>No similarly-named projects could be found.</i></td></tr>
+                            {% endfor %}
+                        {% endwith %}
                     </table>
                 </div>
             </div>
@@ -42,7 +46,7 @@
                 <div class="card-body">
                     <p>
                         The following characteristics were identified by
-                        <a href="https://github.com/Microsoft/ApplicationInspector">Microsoft Application Inspector</a>.
+                        <a href="https://github.com/Microsoft/ApplicationInspector" rel="noopener noreferrer">Microsoft Application Inspector</a>.
                     </p>
                     <ul class="list-group list-group-condensed">
                         {% for tag in component|get_metadata:"tool.applicationinspector.tags" %}

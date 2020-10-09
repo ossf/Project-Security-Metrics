@@ -9,10 +9,10 @@ from os import getenv
 from subprocess import CalledProcessError
 
 from azure.storage.queue import (
+    BinaryBase64DecodePolicy,
+    BinaryBase64EncodePolicy,
     QueueClient,
     QueueMessage,
-    TextBase64DecodePolicy,
-    TextBase64EncodePolicy,
 )
 
 logging.basicConfig(
@@ -27,56 +27,57 @@ class Orchestrator:
     inbound_queue = None  # type: QueueClient
     outbound_queue = None  # type: QueueClient
 
+    @staticmethod
+    def initialize_queue(connection_string: str, queue_name: str) -> QueueClient:
+        """Initialize a queue given the connection string and queue name."""
+        if connection_string is None or queue_name is None:
+            return None
+
+        client = None
+        try:
+            client = QueueClient.from_connection_string(connection_string, queue_name)
+            client.message_encode_policy = BinaryBase64EncodePolicy()
+            client.message_decode_policy = BinaryBase64DecodePolicy()
+            try:
+                client.create_queue()
+            except:
+                pass  # OK to ignore
+        except:
+            client = None
+
+        return client
+
     def __init__(self):
         """Initialize a new Orchestrator object."""
 
-        inbound_queue_connect_str = os.getenv("INBOUND_JOB_QUEUE_CONNECTION_STRING")
-        inbound_queue_name = os.getenv("INBOUND_QUEUE_NAME", "metric-work-queue")
-
-        outbound_queue_connect_str = os.getenv("OUTBOUND_JOB_QUEUE_CONNECTION_STRING")
-        outbound_queue_name = os.getenv("OUTBOUND_QUEUE_NAME", "processed-queue")
-
-        if inbound_queue_connect_str is None or outbound_queue_connect_str is None:
-            raise Exception("Missing environment variables.")
-
-        self.inbound_queue = QueueClient.from_connection_string(
-            inbound_queue_connect_str, inbound_queue_name
+        self.inbound_queue = Orchestrator.initialize_queue(
+            os.getenv("DEFAULT_QUEUE_CONNECTION_STRING"), os.getenv("DEFAULT_QUEUE_WORK_TO_DO")
         )
-        self.inbound_queue.message_encode_policy = TextBase64EncodePolicy()
-        self.inbound_queue.message_decode_policy = TextBase64DecodePolicy()
-        try:
-            self.inbound_queue.create_queue()
-        except:
-            pass
 
-        self.outbound_queue = QueueClient.from_connection_string(
-            outbound_queue_connect_str, outbound_queue_name
+        self.outbound_queue = Orchestrator.initialize_queue(
+            os.getenv("DEFAULT_QUEUE_CONNECTION_STRING"), os.getenv("DEFAULT_QUEUE_WORK_COMPLETE")
         )
-        self.outbound_queue.message_encode_policy = TextBase64EncodePolicy()
-        self.outbound_queue.message_decode_policy = TextBase64DecodePolicy()
+
         try:
-            self.outbound_queue.create_queue()
-        except:
-            pass
+            config_filename = os.getenv("CONFIGURATION_FILE")
+            if not os.path.exists(config_filename):
+                raise FileNotFoundError("Missing configuration file.")
 
-        if not os.path.exists("config.json"):
-            raise FileNotFoundError("Missing config.json")
-
-        with open("config.json", "r") as f:
-            try:
+            with open(config_filename, "r") as f:
                 self.config = json.load(f)
-            except Exception as msg:
-                logger.error("Unable to read configuration: %s", msg, exc_info=True)
-                raise
+        except Exception as msg:
+            logger.error("Unable to read configuration: %s", msg, exc_info=True)
+            raise
 
     def execute(self):
+        print("execute")
         messages = self.inbound_queue.receive_messages()  # Only gets one message
         if not messages:
             logger.debug("receive_messages() was empty.")
             return
 
         try:
-            message = messages.next()
+            message = next(messages)
         except StopIteration:
             logger.debug("No messages found on queue.")
             return
@@ -126,8 +127,9 @@ class Orchestrator:
 
             if can_execute:
                 private_env = os.environ.copy()
-                del private_env["INBOUND_JOB_QUEUE_CONNECTION_STRING"]
-                del private_env["OUTBOUND_JOB_QUEUE_CONNECTION_STRING"]
+                # TODO Remove additional environment variables that could be sensitive.
+                # Only those specified in requires should be passed in.
+                del private_env["DEFAULT_QUEUE_CONNECTION_STRING"]
                 timeout = int(job.get("timeout", "60"))
                 try:
                     result = subprocess.check_output(cmd, env=private_env, timeout=timeout)

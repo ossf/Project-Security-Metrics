@@ -10,12 +10,12 @@ from django.http import (
 )
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from rest_framework import viewsets
-
 from oss.models.component import Component
 from oss.models.mixins import MetadataMixin, MetadataType
 from oss.models.version import ComponentVersion
 from oss.serializers.serializers import ComponentSerializer
+from packageurl import PackageURL
+from rest_framework import viewsets
 
 
 class ComponentViewSet(viewsets.ModelViewSet):
@@ -71,3 +71,14 @@ def update_metadata(request: HttpRequest) -> HttpResponse:
         return JsonResponse({"status": "OK"})
     else:
         return JsonResponse({"status": "ERR"})
+
+
+@require_http_methods(["GET"])
+def get_metadata(request: HttpRequest) -> JsonResponse:
+    purl = request.GET.get("purl")
+    if purl is None:
+        return HttpResponseNotFound("Package not found.")
+
+    purl_obj = PackageURL.from_string(purl)
+    component = Component.objects.filter(component_purl=purl).first()
+    return JsonResponse(component.get_metadata_dict)
