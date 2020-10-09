@@ -9,14 +9,13 @@ import logging
 import uuid
 
 from django.db import models
-from packageurl import PackageURL
-
 from oss.models.artifact import Artifact
 from oss.models.maintainer import Maintainer
 from oss.models.mixins import MetadataMixin, MetadataType, TrackingFieldsMixin
 from oss.models.reviews import Review, ReviewState
 from oss.models.url import Url
 from oss.models.version import ComponentVersion
+from packageurl import PackageURL
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +57,17 @@ class Component(MetadataMixin, TrackingFieldsMixin):
         )
 
         return latest_version
+
+    def get_icon(self):
+        purl = PackageURL.from_string(self.component_purl)
+        if purl.type == "github":
+            return '<i class="fab fa-github"></i>'
+        elif purl.type == "npm":
+            return '<i class="fab fa-npm"></i>'
+        elif purl.type == "pypi":
+            return '<i class="fab fa-python"></i>'
+        else:
+            return '<i class="fas fa-question"></i>'
 
     @property
     def package_type(self):

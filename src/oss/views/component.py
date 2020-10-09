@@ -9,6 +9,7 @@ import json
 import logging
 import uuid
 
+from core.settings import DEFAULT_QUEUE_WORK_IMPORT
 from django.http import (
     HttpRequest,
     HttpResponse,
@@ -21,12 +22,11 @@ from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-
-from core.settings import DEFAULT_QUEUE_WORK_IMPORT
 from oss.models.artifact import Artifact
 from oss.models.component import Component
 from oss.models.cve import CPE, CVE
 from oss.utils.job_queue import JobQueue
+from packageurl.contrib.url2purl import url2purl
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ def show_component(request: HttpRequest, component_id: uuid.UUID) -> HttpRespons
         return HttpResponseNotFound("Component not found.")
 
     result = {"component": component}
-    return render(request, "oss/component/component.html", result)
+    return render(request, "oss/component2/component.html", result)
 
 
 @require_http_methods(["GET"])
@@ -115,20 +115,33 @@ def show_project_risk(request: HttpRequest, component_id: uuid.UUID) -> HttpResp
     return render(request, "oss/component/project-risk.html", result)
 
 
-@require_http_methods(["GET", "POST"])
-def add_component(request: HttpRequest) -> HttpResponse:
-    if request.method == "GET":
-        # Show the form
-        return render(request, "oss/component/add.html", {})
+@require_http_methods(["POST"])
+@csrf_exempt
+def api_add_components(request: HttpRequest) -> HttpResponse:
+    """Add components to the ingestion queue."""
+    component_list = request.POST.get("component_list").splitlines()
 
-    elif request.method == "POST":
-        # Add components to the queue
-        component_list = request.POST.get("component_list").splitlines()
-        job_queue = JobQueue(DEFAULT_QUEUE_WORK_IMPORT)
+    # TODO Validate components to ensure they are well-formed, list isn't too long, etc.
+    job_queue = JobQueue(DEFAULT_QUEUE_WORK_IMPORT)
 
-        for component in component_list:
-            correlation_id = str(uuid.uuid4())
-            job_queue.send_message(
+    num_added = 0
+    num_failed = 0
+
+    for component in component_list:
+        correlation_id = str(uuid.uuid4())
+        component_purl = url2purl(component)
+        log_extra = {
+            "correlation_id": correlation_id,
+            "component": component,
+            "component_purl": component_purl,
+        }
+
+        if component_purl is None:
+            logger.info("Ignoring PackageURL", extra=log_extra)
+            num_failed += 1
+        else:
+            logger.info("Adding import job request", extra=log_extra)
+            message = job_queue.send_message(
                 {
                     "message-type": "job-request",
                     "job-name": "import-component",
@@ -136,9 +149,14 @@ def add_component(request: HttpRequest) -> HttpResponse:
                     "correlation-id": correlation_id,
                 }
             )
-        return HttpResponseRedirect("/component/add?message=OK")  # FIXME
-    else:
-        return HttpResponseBadRequest("Unexpected method.")
+            if message is not None:
+                logger.debug("Successfully added import job request", extra=log_extra)
+                num_added += 1
+            else:
+                logger.warning("Error adding import job request", extra=log_extra)
+                num_failed += 1
+
+    return JsonResponse({"status": "success", "num_added": num_added, "num_failed": num_failed})
 
 
 @require_http_methods(["POST"])

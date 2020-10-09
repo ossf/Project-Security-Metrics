@@ -6,12 +6,11 @@ import logging
 import uuid
 
 import requests
+from core import settings
+from core.settings import DEFAULT_QUEUE_WORK_TO_DO
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-
-from core import settings
-from core.settings import DEFAULT_QUEUE_WORK_TO_DO
 from oss.models.component import Component
 from oss.models.mixins import MetadataType
 from oss.models.url import Url
@@ -48,6 +47,10 @@ class Command(BaseCommand):
                 cache_key = f"job::{component.component_purl}::{job_name}"
                 if cache.get(cache_key, None) is not None:
                     # Already in the queue (or was recently)
+                    continue
+
+                if job.get("metadata-subtree") == "$special":
+                    logger.info("Ignoring special configuration directive: [%s]", job)
                     continue
 
                 metadata_type, key = job.get("metadata-subtree", f"SOURCE.{job_name}").split(".", 1)

@@ -13,7 +13,6 @@ from datetime import datetime
 import requests
 from django.core.management.base import BaseCommand, CommandParser
 from django.db import transaction
-
 from oss.models.cve import CPE, CVE, CVEDatafile
 from oss.utils.collections import get_complex
 
@@ -80,6 +79,7 @@ class CVEDatabaseSynchronizer:
         url = f"https://nvd.nist.gov/feeds/json/cve/1.1/nvdcve-1.1-{suffix}.json.gz"
         response = requests.get(url, stream=True, timeout=60)
         response.raw.decode_content = True
+
         if response.status_code != 200:
             logger.warning("Error loading %s: %s", url, response.status_code)
             return False
@@ -110,3 +110,4 @@ class CVEDatabaseSynchronizer:
             num_saved += 1
             if num_saved % 100 == 0:
                 logger.info("Saved %d CVEs.", num_saved)
+        return True
