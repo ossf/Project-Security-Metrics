@@ -70,6 +70,7 @@ class Orchestrator:
             raise
 
     def execute(self):
+        print("execute")
         messages = self.inbound_queue.receive_messages()  # Only gets one message
         if not messages:
             logger.debug("receive_messages() was empty.")
