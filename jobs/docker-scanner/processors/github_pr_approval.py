@@ -50,7 +50,7 @@ class GitHubPRApprovalJob(BaseJob):
         """Runs the job."""
 
         github_obj = Github(login_or_token=self.github_access_token, per_page=100)
-        if github_obj.get_rate_limit().core < self.GITHUB_RATE_LIMIT_BUFFER:
+        if github_obj.get_rate_limit().core.remaining < self.GITHUB_RATE_LIMIT_BUFFER:
             return None
 
         repo = github_obj.get_repo(f"{self.purl.namespace}/{self.purl.name}")
