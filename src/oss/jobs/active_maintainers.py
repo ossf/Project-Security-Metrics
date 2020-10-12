@@ -1,13 +1,15 @@
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 import datetime
 import logging
 
+from core.settings import GITHUB_TOKENS
 from django.utils import timezone
 from github import Github
-from packageurl import PackageURL
-
-from core.settings import GITHUB_TOKENS
 from oss.models.component import Component
 from oss.models.mixins import MetadataType
+from packageurl import PackageURL
 
 from . import BaseJob
 

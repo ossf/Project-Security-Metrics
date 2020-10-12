@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
+
 """Django's command-line utility for administrative tasks."""
 import os
 import sys

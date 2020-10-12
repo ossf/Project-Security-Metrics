@@ -1,3 +1,6 @@
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 """
 ASGI config for core project.
 

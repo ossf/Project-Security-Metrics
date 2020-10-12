@@ -1,3 +1,6 @@
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 """core URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:

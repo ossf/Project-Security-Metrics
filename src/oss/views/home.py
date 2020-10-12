@@ -1,9 +1,11 @@
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 import logging
 
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
-
 from oss.models.article import Article
 from oss.models.component import Component
 

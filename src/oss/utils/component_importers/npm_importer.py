@@ -1,3 +1,6 @@
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 """
 Imports a NPM project into OpenSSFMetric
 """
