@@ -1,0 +1,102 @@
+{
+    "defaults": {
+        "cadence": "30d"
+    },
+    "config": [
+        {
+            "job-name": "PullRequestsAreReviewedBeforeMerge",
+            "cadence": "30d",
+            "metadata-subtree": "DERIVED.PullRequestReviewsRequired",
+            "enabled": true,
+            "exec-environment": "docker-scanner",
+            "cmd": [
+                "python",
+                "-m",
+                "processors.github_pr_approval",
+                "$TARGET"
+            ],
+            "timeout": "60",
+            "requires": [
+                "env:GITHUB_ACCESS_TOKEN"
+            ]
+        },
+        {
+            "job-name": "CIIBadgeData",
+            "cadence": "30d",
+            "metadata-subtree": "SOURCE.BadgeData",
+            "enabled": false,
+            "exec-environment": "docker-scanner",
+            "cmd": [
+                "python",
+                "-m",
+                "processors.cii_badge_data",
+                "$TARGET"
+            ],
+            "timeout": "30",
+            "requires": []
+        },
+        {
+            "job-name": "FastSquat",
+            "cadence": "30d",
+            "metadata-subtree": "SOURCE.similarly-named-projects",
+            "enabled": false,
+            "exec-environment": "docker-scanner",
+            "cmd": [
+                "python",
+                "-m",
+                "processors.fastsquat",
+                "$TARGET"
+            ],
+            "timeout": "30",
+            "requires": [
+                "env:FASTSQUAT_API_ENDPOINT",
+                "env:FASTSQUAT_API_TOKEN"
+            ]
+        },
+        {
+            "job-name": "Characteristics",
+            "cadence": "30d",
+            "metadata-subtree": "SOURCE.characteristics",
+            "enabled": true,
+            "exec-environment": "docker-scanner",
+            "cmd": [
+                "python",
+                "-m",
+                "processors.characteristics",
+                "$TARGET"
+            ],
+            "timeout": "30",
+            "requires": []
+        },
+        {
+            "job-name": "LanguageAnalyzability",
+            "cadence": "120d",
+            "metadata-subtree": "DERIVED.language-analyzability",
+            "enabled": true,
+            "exec-environment": "docker-scanner",
+            "cmd": [
+                "python",
+                "-m",
+                "processors.languageanalyzability",
+                "$TARGET"
+            ],
+            "timeout": "30",
+            "requires": []
+        },
+        {
+            "job-name": "ImportComponent",
+            "cadence": "30d",
+            "metadata-subtree": "$special",
+            "enabled": true,
+            "exec-environment": "docker-scanner",
+            "cmd": [
+                "python",
+                "-m",
+                "processors.characteristics",
+                "$TARGET"
+            ],
+            "timeout": "30",
+            "requires": []
+        }
+    ]
+}

@@ -10,8 +10,6 @@ from urllib.parse import urlparse
 
 import requests
 from dateutil.parser import isoparse
-from packageurl import PackageURL
-
 from oss.models.artifact import Artifact, ArtifactType
 from oss.models.component import Component
 from oss.models.maintainer import Maintainer, MaintainerType
@@ -21,6 +19,7 @@ from oss.models.version import ComponentVersion
 from oss.utils.collections import get_complex
 from oss.utils.component_importers.base_importer import BaseImporter
 from oss.utils.network_helpers import check_url
+from packageurl import PackageURL
 
 logger = logging.getLogger(__name__)
 
@@ -117,11 +116,17 @@ class NPMImporter(BaseImporter):
         version.description = data.get("description", "")
 
         # Add author and maintainer information
-        maintainers = (
-            get_complex(data, "contributors", [])
-            + get_complex(data, "maintainers", [])
-            + [get_complex(data, "author", [])]
-        )
+        maintainers = get_complex(data, "contributors", []) + get_complex(data, "maintainers", [])
+        authors = get_complex(data, "author")
+        if isinstance(authors, dict):
+            maintainers += [authors]
+        elif isinstance(authors, str):
+            maintainers += [{"name": authors}]
+        elif isinstance(authors, list):
+            maintainers += authors
+        else:
+            logger.warning("Invalid type for 'authors': %s, %s", type(authors), authors)
+
         maintainers = [m for m in maintainers if m != []]
 
         for maintainer in maintainers:

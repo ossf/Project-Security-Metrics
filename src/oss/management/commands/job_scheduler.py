@@ -30,7 +30,7 @@ class Command(BaseCommand):
         """Handles the main execution of this command."""
         logger.info("Starting job runner")
 
-        with open("../jobs/docker-scanner/config.json", "r") as f:
+        with open("../config.json", "r") as f:
             config = json.load(f)
         jobs = config.get("config", [])
 

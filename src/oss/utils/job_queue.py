@@ -10,7 +10,6 @@ from azure.storage.queue import (
     QueueClient,
     QueueMessage,
 )
-
 from core.settings import DEFAULT_QUEUE_CONNECTION_STRING
 
 logger = logging.getLogger(__name__)
@@ -47,12 +46,13 @@ class JobQueue:
             The `QueueMessage`, or None on any error.
         """
         try:
+            kwargs["timeout"] = 30
             return self._client.send_message(message, **kwargs)
         except Exception as msg:
             logger.warning("Error sendsing message: %s", msg, exc_info=True)
             return None
 
-    def receive_message(self) -> QueueMessage:
+    def receive_message(self, **kwargs) -> QueueMessage:
         """Receive the top-most message from the queue.
 
         Params:
@@ -61,15 +61,18 @@ class JobQueue:
         Returns:
             The top-most QueueMessage, or None if the queue is empty.
         """
-        messages = self.receive_messages(1)
+        kwargs["timeout"] = 30
+        messages = self.receive_messages(1, **kwargs)
         try:
             if messages is not None:
                 return next(messages)
+        except StopIteration:
+            return None
         except Exception as msg:
             logger.warning("Error receiving message: %s", msg, exc_info=True)
             return None
 
-    def receive_messages(self, num_messages: int) -> ItemPaged[QueueMessage]:
+    def receive_messages(self, num_messages: int, **kwargs) -> ItemPaged[QueueMessage]:
         """Retrieve multiple messages from the queue.
 
         Params:
@@ -85,7 +88,17 @@ class JobQueue:
             if num_messages < 1:
                 num_messages = 1
 
-            return self._client.receive_messages(messages_per_page=num_messages)
+            kwargs["timeout"] = 30
+            return self._client.receive_messages(messages_per_page=num_messages, **kwargs)
         except Exception as msg:
             logger.warning("Error receiving message: %s", msg, exc_info=True)
             return None
+
+    def delete_message(self, message: QueueMessage) -> bool:
+        """Deletes a message that was previously loaded from the queue."""
+        try:
+            self._client.delete_message(message, timeout=30)
+            return True
+        except Exception as msg:
+            logger.warning("Unable to delete message: %s: %s", message, msg)
+            return False

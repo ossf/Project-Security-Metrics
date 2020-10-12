@@ -14,7 +14,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 
-DEBUG = os.getenv("DEBUG")
+DEBUG = bool(os.getenv("DEBUG"))
 
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -72,15 +72,14 @@ WSGI_APPLICATION = "core.wsgi.application"
 # Database Information
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv("DATABASE_NAME"),
-        "USER": os.getenv("DATABASE_USER"),
-        "PASSWORD": os.getenv("DATABASE_PASSWORD"),
-        "HOST": os.getenv("DATABASE_HOST"),
-        "PORT": os.getenv("DATABASE_PORT"),
+        "ENGINE": os.getenv("DB_ENGINE"),
+        "NAME": os.getenv("DB_DATABASE"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -102,6 +101,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
+STATIC_ROOT = "/usr/src/static"
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = "/usr/src/media"
 
 # Logging
 LOGGING = {
@@ -135,12 +138,17 @@ LOGGING = {
     },
 }
 
-if os.getenv("CACHE_ENABLED"):
+if bool(os.getenv("CACHE_ENABLED")):
     CACHES = {
         "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://redis:6379/1",
+            "OPTIONS": {"CLIENT_CACHE": "django_redis.client.Defaultclient"},
+        },
+        "file_cache": {
             "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
-            "LOCATION": os.getenv("CACHE_FILENAME"),
-        }
+            "LOCATION": os.getenv("CACHE_LOCATION"),
+        },
     }
 
 # Tokens for accessing the GitHub API
@@ -152,6 +160,6 @@ FASTSQUAT_API_TOKEN = os.getenv("FASTSQUAT_API_TOKEN")
 
 # Work Queue
 DEFAULT_QUEUE_CONNECTION_STRING = os.getenv("DEFAULT_QUEUE_CONNECTION_STRING")
-DEFAULT_QUEUE_WORK_TO_DO = os.getenv("DEFAULT_QUEUE_WORK_TO_DO")
-DEFAULT_QUEUE_WORK_COMPLETE = os.getenv("DEFAULT_QUEUE_WORK_COMPLETE")
-DEFAULT_QUEUE_WORK_IMPORT = os.getenv("DEFAULT_QUEUE_WORK_IMPORT")
+DEFAULT_QUEUE_WORK_TO_DO = "metric-work-queue"
+DEFAULT_QUEUE_WORK_COMPLETE = "metric-work-queue-complete"
+DEFAULT_QUEUE_WORK_IMPORT = "import-queue"

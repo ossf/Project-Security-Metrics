@@ -54,7 +54,12 @@ class LanguageAnalyzabilityJob(BaseJob):
                 analyzabilities.append(analyzability)
 
         # @TODO This algorithm can be improved greatly.
-        return {"language-analyzability": sum(analyzabilities) / len(analyzabilities)}
+        if not analyzabilities or len(analyzabilities) == 0:
+            analyzability = 0
+        else:
+            analyzability = sum(analyzabilities) / len(analyzabilities)
+
+        return {"language-analyzability": analyzability}
 
 
 if __name__ == "__main__":

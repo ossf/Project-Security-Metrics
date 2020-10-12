@@ -5,11 +5,10 @@ import logging
 import uuid
 
 import requests
+from core.settings import DEFAULT_QUEUE_WORK_COMPLETE
 from django.core.cache import cache
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-
-from core.settings import DEFAULT_QUEUE_WORK_COMPLETE
 from oss.models.component import Component
 from oss.models.mixins import MetadataType
 from oss.models.url import Url
@@ -29,7 +28,7 @@ class Command(BaseCommand):
         """Handles the main execution of this command."""
         logger.info("Starting job result importer")
 
-        with open("../jobs/docker-scanner/config.json", "r") as f:
+        with open("../config.json", "r") as f:
             config = json.load(f)
         jobs = config.get("config", [])
 

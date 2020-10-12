@@ -2,6 +2,9 @@ project/
 .trash/
 requests-cache.sqlite
 src/oss/static/oss/resources/
+docker/**/.env.*
+# Allow the example files
+!docker/**/.env.*-example
 
 # Created by https://www.toptal.com/developers/gitignore/api/django
 # Edit at https://www.toptal.com/developers/gitignore?templates=django

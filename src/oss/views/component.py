@@ -26,7 +26,8 @@ from oss.models.artifact import Artifact
 from oss.models.component import Component
 from oss.models.cve import CPE, CVE
 from oss.utils.job_queue import JobQueue
-from packageurl.contrib.url2purl import url2purl
+
+# from packageurl.contrib.url2purl import url2purl
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +130,7 @@ def api_add_components(request: HttpRequest) -> HttpResponse:
 
     for component in component_list:
         correlation_id = str(uuid.uuid4())
-        component_purl = url2purl(component)
+        component_purl = "pkg:npm/left-pad"  # url2purl(component)
         log_extra = {
             "correlation_id": correlation_id,
             "component": component,
@@ -142,12 +143,14 @@ def api_add_components(request: HttpRequest) -> HttpResponse:
         else:
             logger.info("Adding import job request", extra=log_extra)
             message = job_queue.send_message(
-                {
-                    "message-type": "job-request",
-                    "job-name": "import-component",
-                    "target": component,
-                    "correlation-id": correlation_id,
-                }
+                json.dumps(
+                    {
+                        "message-type": "job-request",
+                        "job-name": "import-component",
+                        "target": component,
+                        "correlation-id": correlation_id,
+                    }
+                )
             )
             if message is not None:
                 logger.debug("Successfully added import job request", extra=log_extra)
