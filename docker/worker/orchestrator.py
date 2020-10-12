@@ -107,9 +107,7 @@ class Orchestrator:
             ):
                 jobs.append(job)
 
-        if jobs:
-            logger.debug("Job list: %s", jobs)
-
+        logger.debug("Job list: %s", jobs)
         for job in sorted(jobs, key=lambda j: j.get("ordering", 0)):
             can_execute = True
             cmd = []

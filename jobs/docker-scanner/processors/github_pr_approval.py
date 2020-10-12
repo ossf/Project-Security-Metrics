@@ -40,17 +40,20 @@ class GitHubPRApprovalJob(BaseJob):
 
         try:
             self.purl = PackageURL.from_string(args.package)
-            if self.purl.type != "github":
-                raise ValueError("This job only operated on GitHub repositories.")
-        except ValueError:
-            logger.warning("Invalid PackageURL: %s", args.package)
+        except Exception as msg:
+            logger.warning("Invalid PackageURL [%s]: %s", args.package, msg)
             raise
 
     def run(self):
         """Runs the job."""
 
+        if self.purl.type != "github":
+            logger.debug("This job only operated on GitHub repositories (%s)", self.purl)
+            return None
+
         github_obj = Github(login_or_token=self.github_access_token, per_page=100)
         if github_obj.get_rate_limit().core.remaining < self.GITHUB_RATE_LIMIT_BUFFER:
+            logger.debug("We've reached out GitHub API limit. Bailing out.")
             return None
 
         repo = github_obj.get_repo(f"{self.purl.namespace}/{self.purl.name}")
