@@ -1,16 +1,18 @@
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 import datetime
 import logging
 import urllib
 from typing import Dict, List
 
 import requests
+from core.settings import FASTSQUAT_API_ENDPOINT, FASTSQUAT_API_TOKEN
 from django.utils import timezone
 from github import Github
-from packageurl import PackageURL
-
-from core.settings import FASTSQUAT_API_ENDPOINT, FASTSQUAT_API_TOKEN
 from oss.models.component import Component
 from oss.models.mixins import MetadataType
+from packageurl import PackageURL
 
 from . import BaseJob
 

@@ -1,3 +1,6 @@
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 FROM ubuntu:20.04
 
 LABEL schema-version="1.0"

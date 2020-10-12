@@ -1,5 +1,6 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 import json
 import logging
 import os

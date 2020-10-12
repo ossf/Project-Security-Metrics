@@ -1,3 +1,6 @@
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 """
 Imports a NPM project into OpenSSFMetric
 """
@@ -11,8 +14,6 @@ from urllib.parse import urlparse
 import pytz
 from django.utils import timezone
 from github import Github, GitRelease, Repository
-from packageurl import PackageURL
-
 from oss.models.artifact import Artifact, ArtifactType
 from oss.models.component import Component
 from oss.models.maintainer import Maintainer, MaintainerType
@@ -22,6 +23,7 @@ from oss.models.version import ComponentVersion
 from oss.utils.collections import get_complex
 from oss.utils.component_importers.base_importer import BaseImporter
 from oss.utils.network_helpers import check_url
+from packageurl import PackageURL
 
 logger = logging.getLogger(__name__)
 

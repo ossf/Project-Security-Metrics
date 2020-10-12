@@ -1,3 +1,6 @@
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
 import logging
 from os import getenv
 from typing import Union

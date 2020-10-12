@@ -1,5 +1,7 @@
-from django import forms
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
 
+from django import forms
 from oss.models.article import ArticleRevision
 
 

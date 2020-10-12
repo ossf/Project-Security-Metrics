@@ -1,5 +1,5 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
 
 """
 Helper methods related to collections.

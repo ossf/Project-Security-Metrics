@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Copyright Contributors to the OpenSSF project
+# Licensed under the Apache License.
+
+
 import json
 import logging
 import os
