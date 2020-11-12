@@ -39,5 +39,8 @@ RUN dos2unix ./entrypoint.sh
 # copy worker config
 COPY docker/worker/config.json .
 
+# ensure that we have execute permissions
+RUN chmod +x entrypoint.sh
+
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
