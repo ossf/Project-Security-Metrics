@@ -173,5 +173,8 @@ COPY jobs/docker-scanner/processors ./processors
 COPY docker/worker/entrypoint.sh .
 RUN dos2unix ./entrypoint.sh
 
+# ensure that we have execute permissions
+RUN chmod +x entrypoint.sh
+
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
