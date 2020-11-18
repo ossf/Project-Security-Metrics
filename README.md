@@ -16,7 +16,7 @@ Steps to setting up a local development environment.
 1. Copy `docker/web/.env.dev.web-example` to `docker/web/.env.dev.web` and modify the values
    in that file for your local environment.
 1. Do the same thing for `docker/db/.env.dev.db-example` and `docker/worker/.env.dev.worker-example`.
-1. Run 'start.ps1'.
+1. Run `start.ps1`.
 1. Open https://127.0.0.1:8000
 
 We use Docker Compose to configure multiple containers:
