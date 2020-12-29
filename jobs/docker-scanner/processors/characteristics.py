@@ -44,21 +44,10 @@ class CharacteristicsJob(BaseJob):
     def run(self):
         """Runs the job."""
         output = subprocess.check_output(
-            ["oss-characteristic", "-f", "sarifv2", str(self.purl)], cwd="/tmp", timeout=30
+            ["oss-characteristic", "-f", "sarifv2", str(self.purl)], cwd="/tmp", timeout=300
         )
         output_json = json.loads(output)
         return output_json
-        """
-        tags = set()
-        for run in output_json.get("runs", []):
-            for result in run.get("results", []):
-                if result.get("message", {}).get("id") == "languages":
-                    for language in result.get("message", {}).get("text", "").split(","):
-                        tags.add(f"language__{language.strip().lower()}")
-                for tag in result.get("properties", {}).keys():
-                    tags.add(tag)
-        return {"tags": list(tags)}
-        """
 
 
 if __name__ == "__main__":

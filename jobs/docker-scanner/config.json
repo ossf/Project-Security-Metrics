@@ -84,6 +84,23 @@
             "requires": []
         },
         {
+            "job-name": "CollaboratorCount",
+            "cadence": "120d",
+            "metadata-subtree": "SOURCE.collaborator_count",
+            "enabled": true,
+            "exec-environment": "docker-scanner",
+            "cmd": [
+                "python",
+                "-m",
+                "processors.collaborator_count",
+                "$TARGET"
+            ],
+            "timeout": "30",
+            "requires": [
+                "env:GITHUB_ACCESS_TOKEN"
+            ]
+        },
+        {
             "job-name": "ImportComponent",
             "cadence": "30d",
             "metadata-subtree": "$special",

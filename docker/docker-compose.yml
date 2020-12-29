@@ -20,6 +20,11 @@ services:
     depends_on:
       - db
       - azurite
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2048M
 
   worker:
     build:
@@ -30,6 +35,11 @@ services:
       - worker/.env.dev.worker
     depends_on:
       - azurite
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
 
   worker-web:
     build:
@@ -49,6 +59,11 @@ services:
       - db
       - azurite
       - redis
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
 
   db:
     image: postgres
@@ -59,6 +74,11 @@ services:
       - 5432:5432
     env_file:
       - db/.env.dev.db
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1024M
 
   nginx:
     build: ./nginx
@@ -69,6 +89,11 @@ services:
       - 8000:80
     depends_on:
       - web
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 250M
 
   azurite:
     image: mcr.microsoft.com/azure-storage/azurite
@@ -78,6 +103,11 @@ services:
     ports:
       - 20000:10000
       - 20001:10001
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 250M
 
   redis:
     image: redis:alpine
@@ -85,6 +115,11 @@ services:
       - 26379:6379
     volumes:
       - redis_volume:/data
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'
+          memory: 50M      
 
 volumes:
   postgresql_data:
