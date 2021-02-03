@@ -61,12 +61,12 @@ Install [.NET 5](https://dotnet.microsoft.com/download/dotnet/5.0) and the
 [Azure Functions Core Tools](https://www.npmjs.com/package/azure-functions-core-tools).
 
 From the `src/ingestion` directory, run `dotnet build` and then from the
-`src/ingestion/MetricAPI` directory, run `func start --csharp`. You should see
+`src/ingestion` directory, run `func start --csharp`. You should see
 `AddMetric: [POST] http://localhost:7071/api/AddMetric` after a few seconds. This will be
 the value of `METRIC_API_ENDPOINT`.
 
-Stop the function, and then modify the `src/ingestion/MetricAPI/local.settings.json` file, filling
-in the values from what you specified when you created the database.
+Stop the function, and then rename `src/ingestion/local.settings.json.template` to 
+`local.settings.json`, and fill in the values from what you specified when you created the database.
 
 ```
    "DATABASE_CONNECTION_STRING": "Server=localhost;Database=<DATABASE>;Port=5432;User Id=<USERNAME>;Password=<PASSWORD>;Ssl Mode=Require;",
