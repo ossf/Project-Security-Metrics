@@ -26,6 +26,6 @@ termcolor==1.1.0
 toml==0.10.2
 typed-ast==1.4.1
 typing-extensions==3.7.4.3
-urllib3==1.26.2
+urllib3==1.26.3
 websockets==8.1
 yarl==1.6.3
