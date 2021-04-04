@@ -1,0 +1,26 @@
+{% extends "./index.html" %}
+
+{% block body %}
+<div class="container-fluid" style="padding-left: 0px; padding-right: 0">
+    <div class="row">
+        <div class="btn-group-vertical btn-group-lg p-2 mb-auto sidebar flex-fixed-width-item " role="group" aria-label="Sidebar">
+            {% block sidebar_bottom %}
+            {% endblock sidebar_bottom %}
+        </div>
+
+        {% autoescape on %}
+
+        <!-- Common Header -->
+        <main role="main" class="col">
+            <nav aria-label="breadcrumb">
+                {% block breadcrumb %}
+                {% endblock breadcrumb %}
+            </nav>
+            {% block main %}
+            {% endblock main %}
+        </main>
+        {% endautoescape %}
+    </div>
+</div>
+
+{% endblock body %}

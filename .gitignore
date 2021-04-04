@@ -1,7 +1,10 @@
 project/
 .trash/
 requests-cache.sqlite
-src/oss/static/oss/resources/
+src/management/static
+src/metricdb
+src/management/metricdb
+src/management/app/static/app/resources/
 docker/**/.env.*
 # Allow the example files
 !docker/**/.env.*-example

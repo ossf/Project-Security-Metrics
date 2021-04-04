@@ -1,6 +1,6 @@
 {
     "python.languageServer": "Pylance",
-    "python.pythonPath": "project\\Scripts\\python.exe",
+    "python.pythonPath": "venv\\Scripts\\python.exe",
     "files.exclude": {
         "**/.git": true,
         "**/.DS_Store": true,

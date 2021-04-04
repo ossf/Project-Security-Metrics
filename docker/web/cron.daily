@@ -1,0 +1,13 @@
+#!/bin/sh
+
+SRC_ROOT="/usr/src/app/src/management"
+
+if [ -d "$SRC_ROOT" ]; then
+    cd "$SRC_ROOT"
+    echo "OpenSSF: Starting data reload."
+    python manage.py load_bestpractices_data
+    python manage.py load_criticality_score
+    python manage.py load_scorecard_data
+    python manage.py load_security_reviews
+    echo "OpenSSF: Completed data reload."
+fi
