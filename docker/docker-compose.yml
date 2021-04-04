@@ -1,0 +1,76 @@
+version: "3.8"
+
+services:
+  grafana:
+    build: 
+      context: ..
+      dockerfile: docker/grafana/Dockerfile
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana_volume:/var/lib/grafana
+
+  db:
+    image: postgres
+    restart: always
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    env_file:
+      - db/.env.dev.db
+
+  nginx:
+    build: ./nginx
+    volumes:
+      - ../src/web-landing/:/usr/src/www
+    ports:
+      - 8000:80
+    depends_on:
+      - grafana
+
+  web:
+    build:
+      context: ..
+      dockerfile: docker/web/Dockerfile
+    working_dir: /usr/src/app/src/management
+    command: gunicorn management.wsgi:application --timeout 600 --workers 3 --reload --bind 0.0.0.0:8000
+    volumes:
+      - ../src:/usr/src/app/src
+      - static_volume:/usr/src/static
+      - media_volume:/usr/src/media
+      - cache_volume:/usr/src/cache
+      - log_volume:/usr/src/log
+    expose:
+      - 8000
+    env_file:
+      - web/.env.dev.web
+    depends_on:
+      - db
+      - azurite
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    hostname: azurite
+    volumes:
+      - azurite_volume:/data
+    ports:
+      - 20000:10000
+      - 20001:10001
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 26379:6379
+    volumes:
+      - redis_volume:/data
+
+volumes:
+  postgresql_data:
+  static_volume:
+  media_volume:
+  azurite_volume:
+  cache_volume:
+  log_volume:
+  redis_volume:
+  grafana_volume:
