@@ -38,23 +38,13 @@
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Management Commands
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  {% for command in commands %}
-                    <a class="dropdown-item" href="/run-command?name={{command}}">{{ command }}</a>
-                  {% endfor %}
-                </div>
-              </li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   About
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" href="/general/about">About Us</a>
-                  <a class="dropdown-item" href="https://github.com" rel="noopener noreferrer">Open Source</a>
-                  <a class="dropdown-item" href="/general/contact">Contact</a>
+                  <a class="dropdown-item" href="/general/about">About</a>
+                  <a class="dropdown-item" href="https://github.com/ossf/Project-Security-Metrics" rel="noopener noreferrer">Open Source</a>
                   <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="https://openssf.org" rel="noopener noreferrer">OpenSSF</a>
                   <a class="dropdown-item" href="https://linuxfoundation.org" rel="noopener noreferrer">Linux Foundation</a>
                 </div>
               </li>

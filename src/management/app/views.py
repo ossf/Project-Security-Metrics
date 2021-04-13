@@ -19,12 +19,7 @@ def home(request: HttpRequest) -> HttpResponse:
     """
     Render the main "home page"
     """
-
-    # @TODO: Remove the management commands
-    app_config = apps.get_app_config("app")
-    commands = find_commands(os.path.join(app_config.path, "management"))
-    data = {"commands": commands}
-    return render(request, "app/home.html", data)
+    return render(request, "app/home.html", {})
 
 
 def add_package(request: HttpRequest) -> HttpResponse:
@@ -61,15 +56,15 @@ def api_get_package(request: HttpRequest) -> HttpResponse:
     if package_url:
         purl = PackageURL.from_string(package_url)
         if not purl:
-            raise HttpResponseBadRequest("Invalid Package URL.")
+            return HttpResponseBadRequest("Invalid Package URL.")
     else:
         url = request.GET.get("url")
         if url:
             purl = url2purl(url)
             if not purl:
-                raise HttpResponseBadRequest("Invalid URL.")
+                return HttpResponseBadRequest("Invalid URL.")
     if not purl:
-        raise HttpResponseBadRequest("Required, package_url or url.")
+        return HttpResponseBadRequest("Required, package_url or url.")
 
     package = get_object_or_404(Package, package_url=str(purl))
     data = {"package_url": package.package_url}
@@ -98,3 +93,7 @@ def search_package(request: HttpRequest) -> HttpResponse:
     page_obj = paginator.get_page(page_number)
     data = {"page_obj": page_obj, "query": query, "commands": commands}
     return render(request, "app/search.html", data)
+
+
+def general_about(request: HttpRequest) -> HttpResponse:
+    return render(request, "app/about.html", {})
