@@ -2,8 +2,17 @@ version: "3.8"
 
 services:
   nginx:
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
     volumes:
-      - ./nginx/conf.d/production:/etc/nginx/conf.d
+      - ./nginx/conf/nginx-production.conf:/etc/nginx/conf.d/metrics.conf
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
     ports:
       - 80:80
       - 443:443
+  certbot:
+    image: certbot/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot    

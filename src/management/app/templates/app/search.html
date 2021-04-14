@@ -55,7 +55,7 @@
                 </thead>
                 {% for project in page_obj %}
                     <tr>
-                        <td><a href="/grafana/d/GMWH57_Mk/metric-dashboard?orgId=1&var-PackageURL={{ project.package_url|urlencode }}">{{ project.package_url }}</a></td>
+                        <td><a href="/grafana/d/default/metric-dashboard?orgId=1&var-PackageURL={{ project.package_url|urlencode }}">{{ project.package_url }}</a></td>
                         <td><a href="/api/1/get-project?package_url={{ project.package_url }}">API</a></td>
                         <td>{{ project.last_updated }}</td>
                     </tr>

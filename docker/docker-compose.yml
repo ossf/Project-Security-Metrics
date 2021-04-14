@@ -23,7 +23,7 @@ services:
     build: ./nginx
     restart: always    
     volumes:
-      - ./nginx/conf.d/nginx-development.conf:/etc/nginx/conf.d/metrics.conf
+      - ./nginx/conf/nginx-development.conf:/etc/nginx/conf.d/metrics.conf
     ports:
       - 8000:80
     depends_on:
