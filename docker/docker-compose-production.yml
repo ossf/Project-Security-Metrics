@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  nginx:
+    volumes:
+      - ./nginx/conf.d/production:/etc/nginx/conf.d
+    ports:
+      - 80:80
+      - 443:443

@@ -15,8 +15,8 @@ service cron start
 
 # Perform an initial configuration (if needed)
 python manage.py createsuperuser --noinput
-#yarnpkg --non-interactive
-#python manage.py collectstatic --noinput
+yarnpkg --non-interactive
+python manage.py collectstatic --noinput
 #python manage.py makemigrations
 python manage.py migrate
 
