@@ -5,7 +5,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link rel="shortcut icon" type="image/png" href="{% static "app/images/favicon-linuxfoundation.png" %}"/>
+    <link rel="shortlink" href="https://metrics.openssf.org/">
+    <link rel="shortcut icon" type="image/png" href="{% static "app/images/cropped-openssf-192x192.png" %}"/>
     <link rel="stylesheet" type="text/css" href="{% static "app/resources/bootswatch/dist/sandstone/bootstrap.min.css" %}" />
     <link rel="stylesheet" type="text/css" href="{% static "app/css/oss.css" %}">
     {% block style_include %}
@@ -18,7 +19,7 @@
       {% block style %}
       {% endblock style %}
     </style>
-    <title>{{ page_title|default:"Open Source - Security Metrics" }}</title>
+    <title>{{ page_title|default:"Security Metrics - Open Source Security Foundation" }}</title>
   </head>
   <body>
     {% block full_body %}
@@ -28,30 +29,38 @@
 
     <nav class="navbar navbar-expand-md navbar-dark top-navbar">
         <a href="/" class="navbar-brand" style="color: #ffe">Open Source <strong>Security Metrics</strong></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button style="position:absolute;right:5px;top:5px" class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav ml-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="/grafana/">Grafana</a>
+              <li class="nav-item pr-3">
+                <a class="nav-link" href="/grafana/d/default/metric-dashboard?orgId=1" title="View Dashboard"><i style="font-size: 1.5rem" class="fas fa-chart-bar"></i>
+                  <span class="d-inline-block d-md-none pl-3">View Dashboard</span></a>
+              </li>
+              <li class="nav-item pr-3">
+                <a class="nav-link" href="https://github.com/ossf/Project-Security-Metrics"><i style="font-size: 1.5rem" class="fab fa-github"></i>
+                  <span class="d-inline-block d-md-none pl-3">GitHub Project</span></a>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  About
-                </a>
+                  <i style="font-size: 1.5rem" class="fas fa-info-circle"></i>
+                  <span class="d-inline-block d-md-none pl-3">Learn More</span></a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                   <a class="dropdown-item" href="/general/about">About</a>
                   <a class="dropdown-item" href="https://github.com/ossf/Project-Security-Metrics" rel="noopener noreferrer">Open Source</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="https://openssf.org" rel="noopener noreferrer">OpenSSF</a>
                   <a class="dropdown-item" href="https://linuxfoundation.org" rel="noopener noreferrer">Linux Foundation</a>
+                  <a class="dropdown-item" href="https://www.linuxfoundation.org/trademark-usage" rel="noopener noreferrer">Trademark Usage</a>
+                  <a class="dropdown-item" href="http://www.linuxfoundation.org/privacy" rel="noopener noreferrer">Privacy Policy</a>
+                  <a class="dropdown-item" href="http://www.linuxfoundation.org/terms" rel="noopener noreferrer">Terms of Use</a>
                 </div>
               </li>
-              <li class="ml-4">
+              <li class="ml-4" style="margin-top:auto;margin-bottom:auto">
                 <form action="/search" method="get" class="form-inline mt-2 mt-md-0">
-                  <input name="q" class="form-control form-control-sm mr-sm-2" type="text" placeholder="Search" aria-label="Search" value="" size="20">
-                  <button class="btn btn-sm btn-primary my-2 my-sm-0" type="submit">Search</button>
+                  <input name="q" class="form-control form-control-sm mr-sm-2" type="text" placeholder="Search..." aria-label="Search" value="{{ query }}" size="20">
+                  <button class="btn btn-sm btn-primary my-2 my-sm-0" type="submit"><i class="fas fa-search"></i></button>
                 </form>
               </li>
             </ul>

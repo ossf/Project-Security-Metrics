@@ -1,21 +1,12 @@
 {% extends "./index.html" %}
 
 {% block body %}
-<div class="container-fluid" style="padding-left: 0px; padding-right: 0">
+<div class="container-fluid" style="padding-left: 0px; padding-right: 0;margin-top:25px;">
+
     <div class="row">
-        <div class="col p-0">
-            <div class="jumbotron jumbotron-fluid" style="background-color:#ff9f00;color:#ffe; text-shadow:0px 0px 15px #666">
-                <div class="container text-center">
-                    <h1 class="display-4">Open Source Security Metrics</h1>
-                    <h3>Justified Trust in Open Source</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <h2>What is this?</h2>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6">
+            <h2>Welcome!</h2>
             <p>
                 The <strong>OpenSSF Security Metrics Project</strong> was created to collect,
                 aggregate, analyze, and communicate relevant security data about open source
@@ -29,37 +20,19 @@
             </p>
             <p>
                 To get started, search for a project in the form below, or jump straight
-                to the <a href="/grafana/">dashboard</a>.
+                to the <a href="/grafana/d/default/metric-dashboard?orgId=1">dashboard</a>.
             </p>
             <p>
                 <form class="d-flex justify-content-center" method="get" action="/search">
                     <input type="text" name="q" placeholder="Search..." size="30"/>
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
                 </form>
             </p>
         </div>
-        <div class="col-3"></div>
+        <div class="col-lg-3"></div>
     </div>
 </div>
 {% endblock %}
 
-
 {% block footer %}
-<footer class="container-fluid footer">
-    <nav class="navbar fixed-bottom">
-        <div class="row" style="width: 100%;">
-            <div class="col-3"></div>
-            <div class="col-4 p-4" style="max-width: 700px">
-                Copyright © 2021 The Linux Foundation® . All rights reserved. The Linux Foundation has
-                registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation,
-                please see our
-                <a href="https://www.linuxfoundation.org/trademark-usage" target="_blank" rel="noopener noreferrer">Trademark Usage</a>
-                page. Linux is a registered trademark of Linus Torvalds.
-                <a href="http://www.linuxfoundation.org/privacy">Privacy Policy</a> and
-                <a href="http://www.linuxfoundation.org/terms">Terms of Use</a>.
-            </div>
-            <div class="col-5"></div>
-        </div>
-    </nav>
-</footer>
 {% endblock footer %}
