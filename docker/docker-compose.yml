@@ -5,8 +5,7 @@ services:
     build: 
       context: ..
       dockerfile: docker/grafana/Dockerfile
-    ports:
-      - 3000:3000
+    restart: always      
     volumes:
       - grafana_volume:/var/lib/grafana
 
@@ -22,8 +21,9 @@ services:
 
   nginx:
     build: ./nginx
+    restart: always    
     volumes:
-      - ../src/web-landing/:/usr/src/www
+      - ./nginx/conf/nginx-development.conf:/etc/nginx/conf.d/metrics.conf
     ports:
       - 8000:80
     depends_on:
@@ -33,6 +33,7 @@ services:
     build:
       context: ..
       dockerfile: docker/web/Dockerfile
+    restart: always      
     working_dir: /usr/src/app/src/management
     command: gunicorn management.wsgi:application --timeout 600 --workers 3 --reload --bind 0.0.0.0:8000
     volumes:
@@ -47,21 +48,9 @@ services:
       - web/.env.dev.web
     depends_on:
       - db
-      - azurite
-
-  azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
-    hostname: azurite
-    volumes:
-      - azurite_volume:/data
-    ports:
-      - 20000:10000
-      - 20001:10001
 
   redis:
     image: redis:alpine
-    ports:
-      - 26379:6379
     volumes:
       - redis_volume:/data
 
@@ -69,7 +58,6 @@ volumes:
   postgresql_data:
   static_volume:
   media_volume:
-  azurite_volume:
   cache_volume:
   log_volume:
   redis_volume:

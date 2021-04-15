@@ -38,9 +38,11 @@ RUN pip install --use-feature=2020-resolver -r requirements.txt
 # copy entrypoint.sh
 COPY docker/web/entrypoint.sh .
 RUN dos2unix ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
 COPY docker/web/cron.daily /etc/cron.daily/openssf-reload-all
 RUN dos2unix /etc/cron.daily/openssf-reload-all
+RUN chmod +x /etc/cron.daily/openssf-reload-all
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

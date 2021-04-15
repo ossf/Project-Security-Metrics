@@ -51,12 +51,13 @@ class Command(BaseCommand):
                     continue
 
                 with transaction.atomic():
+                    date_ = parse(data.get("Date"))
+                    package, _ = Package.objects.get_or_create(package_url=str(package_url))
+
                     Metric.objects.filter(
                         package=package, key__startswith="openssf.scorecard.raw."
                     ).delete()
 
-                    date_ = parse(data.get("Date"))
-                    package, _ = Package.objects.get_or_create(package_url=str(package_url))
                     for check in data.get("Checks", []):
                         check_name = check.get("CheckName").lower().strip()
                         try:

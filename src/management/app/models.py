@@ -19,13 +19,21 @@ class Package(models.Model):
         purl = PackageURL.from_string(self.package_url)
         if not purl:
             return None
-        if purl.type == "npm":
+        if purl.type in ["npm", "github"]:
             if purl.namespace:
                 return f"{purl.namespace}/{purl.name}"
             else:
                 return purl.name
         else:
             return purl.name
+
+    @property
+    def full_name_version(self):
+        purl = PackageURL.from_string(self.package_url)
+        if purl.version:
+            return f"{self.full_name}@{purl.version}"
+        else:
+            return self.full_name
 
     class Meta:
         db_table = "package"

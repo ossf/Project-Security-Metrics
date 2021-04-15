@@ -1,136 +1,93 @@
 {% extends "./index.html" %}
 
 {% block body %}
-<div class="container-fluid" style="padding-left: 0px; padding-right: 0">
+<div class="container-fluid" style="margin-top: 15px;padding-left: 0px; padding-right: 0">
     <div class="row">
-        <div class="col p-0">
-            <div class="jumbotron jumbotron-fluid" style="background-color:#ff9f00;color:#ffe; text-shadow:0px 0px 15px #666">
-                <div class="container text-center">
-                    <h1 class="display-4">Open Source Security Metrics</h1>
-                    <h3>Justified Trust in Open Source</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <h2>Add a Project</h2>
-            <p>
-                You can add a project to the <strong>OpenSSF Metric Dashboard</strong> by using
-                the form below. Just enter a Package URL and press 'Add'. The package will enter
-                the queue and some data should be available within a few hours.
-            </p>
-            <form class="d-flex justify-content-center" method="post" action="/add-package">
-                {% csrf_token %}
-                <input type="text" name="package_url" placeholder="pkg:npm/left-pad" size="30"/>
-                <button type="submit" class="btn btn-primary">Add</button>
-            </form>
-        </div>
-        <div class="col-3"></div>
-    </div>
--->
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <form class="d-flex justify-content-center" method="get" action="/search">
-                <input type="text" name="q" placeholder="Search..." size="30" value="{{ query }}"/>
-                <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i>&nbsp;&nbsp;Search</button>
-            </form>
-        </div>
-        <div class="col-3"></div>
-    </div>    
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <h3>Projects</h3>
-            <table class="table table-sm">
-                <thead>
-                    <tr>
-                        <th>Project</th>
-                        <th>API</th>
-                        <th>Last Updated</th>
-                    </tr>    
-                </thead>
-                {% for project in page_obj %}
-                    <tr>
-                        <td><a href="/grafana/d/GMWH57_Mk/metric-dashboard?orgId=1&var-PackageURL={{ project.package_url|urlencode }}">{{ project.package_url }}</a></td>
-                        <td><a href="/api/1/get-project?package-url={{ project.package_url }}">API</a></td>
-                        <td>{{ project.last_updated }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6">
+            <h3>Search Results for <strong>{{ query }}</strong></h3>
+            {% if page_obj %}
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>API</th>
+                            <th>Last Updated</th>
+                        </tr>    
+                    </thead>
+                    {% for project in page_obj %}
+                        <tr>
+                            <td title="{{ project.package_url }}">
+                                <a href="/grafana/d/default/metric-dashboard?orgId=1&var-PackageURL={{ project.package_url|urlencode }}">
+                                    {% if "pkg:github" in project.package_url %}
+                                        <i class="fab fa-github"></i>&nbsp;&nbsp;
+                                    {% elif "pkg:npm" in project.package_url %}
+                                        <i class="fab fa-npm"></i>&nbsp;&nbsp;
+                                    {% elif "pkg:pypi" in project.package_url %}
+                                        <i class="fab fa-python"></i>&nbsp;&nbsp;
+                                    {% else %}
+                                        <i class="fas fa-archive"></i>&nbsp;&nbsp;
+                                    {% endif %} 
+                                    {{ project.full_name_version }}
+                                </a>
+                            </td>
+                            <td><a href="/api/1/get-project?package_url={{ project.package_url }}"><i class="fas fa-code"></i></a></td>
+                            <td>{{ project.last_updated|timesince }} ago</td>
+                        </tr>
+                    {% endfor %}
+                </table>
 
-            <hr>
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                {% if page_obj.has_previous %}
-                    <li class="page-item">
-                    <a class="page-link" href="/search?q={{query}}&page={{ page_obj.previous_page_number }}">Previous</a>
-                  </li>
-                {% else %}
-                    <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-                  </li>
-                {% endif %}
-        
-                {% if page_obj.number|add:'-4' > 1 %}
-                    <li class="page-item"><a class="page-link" href="/search?q={{query}}&page={{ page_obj.number|add:'-5' }}">&hellip;</a></li>
-                {% endif %}
-        
-                {% for i in page_obj.paginator.page_range %}
-                    {% if page_obj.number == i %}
-                        <li class="page-item active" aria-current="page">
-                      <span class="page-link">
-                        {{ i }}
-                        <span class="sr-only">(current)</span>
-                      </span>
+                <hr>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                        <a class="page-link" href="/search?q={{query}}&page={{ page_obj.previous_page_number }}">Previous</a>
                     </li>
-                    {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
-                         <li class="page-item"><a class="page-link" href="/search?q={{query}}&page={{ i }}">{{ i }}</a></li>
+                    {% else %}
+                        <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                    </li>
                     {% endif %}
-                {% endfor %}
-        
-                {% if page_obj.paginator.num_pages > page_obj.number|add:'4' %}
-                   <li class="page-item"><a class="page-link" href="/search?q={{query}}&page={{ page_obj.number|add:'5' }}">&hellip;</a></li>
-                {% endif %}
-        
-                {% if page_obj.has_next %}
-                    <li class="page-item">
-                    <a class="page-link" href="/search?q={{query}}&page={{ page_obj.next_page_number }}">Next</a>
-                  </li>
-                {% else %}
-                    <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
-                  </li>
-                {% endif %}
-              </ul>
-            </nav>
+            
+                    {% if page_obj.number|add:'-4' > 1 %}
+                        <li class="page-item"><a class="page-link" href="/search?q={{query}}&page={{ page_obj.number|add:'-5' }}">&hellip;</a></li>
+                    {% endif %}
+            
+                    {% for i in page_obj.paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active" aria-current="page">
+                        <span class="page-link">
+                            {{ i }}
+                            <span class="sr-only">(current)</span>
+                        </span>
+                        </li>
+                        {% elif i > page_obj.number|add:'-5' and i < page_obj.number|add:'5' %}
+                            <li class="page-item"><a class="page-link" href="/search?q={{query}}&page={{ i }}">{{ i }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+            
+                    {% if page_obj.paginator.num_pages > page_obj.number|add:'4' %}
+                    <li class="page-item"><a class="page-link" href="/search?q={{query}}&page={{ page_obj.number|add:'5' }}">&hellip;</a></li>
+                    {% endif %}
+            
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                        <a class="page-link" href="/search?q={{query}}&page={{ page_obj.next_page_number }}">Next</a>
+                    </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                </nav>
 
+            {% else %}
+                <i>Sorry, there were no projects found.</i>
+            {% endif %}
         </div>
-        <div class="col-3"></div>
+        <div class="col-lg-3"></div>
     </div>
 </div>
 {% endblock %}
-
-
-{% block footer %}
-<footer class="container-fluid footer">
-    <nav class="navbar fixed-bottom">
-        <div class="row" style="width: 100%;">
-            <div class="col-3"></div>
-            <div class="col-4 p-4" style="max-width: 700px">
-                Copyright © 2021 The Linux Foundation® . All rights reserved. The Linux Foundation has
-                registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation,
-                please see our
-                <a href="https://www.linuxfoundation.org/trademark-usage" target="_blank" rel="noopener noreferrer">Trademark Usage</a>
-                page. Linux is a registered trademark of Linus Torvalds.
-                <a href="http://www.linuxfoundation.org/privacy">Privacy Policy</a> and
-                <a href="http://www.linuxfoundation.org/terms">Terms of Use</a>.
-            </div>
-            <div class="col-5"></div>
-        </div>
-    </nav>
-</footer>
-{% endblock footer %}

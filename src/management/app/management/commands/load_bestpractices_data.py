@@ -25,9 +25,6 @@ class Command(BaseCommand):
         logging.info("Gathering all best practice data.")
         page = 0
         while True:
-            if page > 5:
-                break
-
             page += 1
             url = self.BEST_PRACTICES_ROOT_URL + f"?page={page}"
 
