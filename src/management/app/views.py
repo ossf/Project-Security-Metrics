@@ -1,5 +1,7 @@
 import json
+import logging
 import os
+import random
 
 from django.apps import apps
 from django.core import serializers
@@ -19,7 +21,29 @@ def home(request: HttpRequest) -> HttpResponse:
     """
     Render the main "home page"
     """
-    return render(request, "app/home.html", {})
+    # For the sample projects, we'll include two from the popular list (hardcoded) and
+    # two randomly sampled.
+    popular_projects_purls = [
+        "pkg:github/nodejs/node",
+        "pkg:github/curl/curl",
+        "pkg:github/kubernetes/kubernetes",
+    ]
+    sample_projects = Package.objects.filter(package_url__in=popular_projects_purls)
+    sample_projects = set(sample_projects)
+
+    max_id = Package.objects.all().order_by("-pk")[0].pk
+    attempts_left = 20
+    while len(sample_projects) < 5 and attempts_left > 0:
+        attempts_left -= 1
+        try:
+            package = Package.objects.get(pk=random.randint(1, max_id))
+            sample_projects.add(package)
+        except Exception as msg:
+            logging.warning("Error loading sample project: %s", msg)
+    sample_projects = list(sample_projects)
+    random.shuffle(sample_projects)
+
+    return render(request, "app/home.html", {"sample_projects": sample_projects})
 
 
 def add_package(request: HttpRequest) -> HttpResponse:
