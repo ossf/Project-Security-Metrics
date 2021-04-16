@@ -19,8 +19,12 @@
                 ready for anything more than early testing.
             </p>
             <p>
-                To get started, search for a project in the form below, or jump straight
-                to the <a href="/grafana/d/default/metric-dashboard?orgId=1">dashboard</a>.
+                To get started, search for a project in the form below, jump straight
+                to the <a href="/grafana/d/default/metric-dashboard?orgId=1">dashboard</a>,
+                or try out a few projects like
+                {% for project in sample_projects %}{% if not forloop.first %}{% if forloop.last %}, or {% else %}, {% endif %}{% endif %}<a href="/grafana/d/default/metric-dashboard?orgId=1&var-PackageURL={{ project.package_url|urlencode }}">
+                {{ project.full_name_version }}</a>{% endfor %}
+                .
             </p>
             <p>
                 <form class="d-flex justify-content-center" method="get" action="/search">
