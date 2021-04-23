@@ -27,8 +27,9 @@ elif args.analyze:
 
         metrics.RefreshGithubIssueTrend(package_url=package_url).execute()
         metrics.RefreshLibrariesIO(package_url=package_url).execute()
-        metrics.RefreshScorecard(package_url=package_url).execute()
         metrics.RefreshGithubProjectReleases(package_url=package_url).execute()
+        metrics.SecurityReviews.RefreshSecurityReviews().execute_complete()
+        metrics.RefreshScorecard(package_url=package_url).execute()
         # subprocess.check_call(["bash", "scripts/distinct-committers-365.sh", str(package_url)])
         sys.exit(0)
     except Exception as msg:
