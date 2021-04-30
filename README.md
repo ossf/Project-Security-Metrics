@@ -7,133 +7,119 @@ This project is in early development and we welcome community support. For more 
 to get involved, please see our [workgroup](https://github.com/ossf/wg-identifying-security-threats)
 page.
 
-## Developement
+## Installing a Local Development Environment
 
-Steps to setting up a local development environment. The main components are:
+Setting up a basic development environment is straightforward:
 
-* Database - PostgreSQL (for storing data)
-* Azure Function (for handling the ingestion to the database)
-* Grafana (to view the results)
-* Collectors (doing things, and then calling the Azure Function).
+* Install [Docker Engine](https://docs.docker.com/engine/install/) and 
+  [Docker Compose](https://docs.docker.com/compose/install/).
+* Clone this repository.
+* Create two configuration files from provided templates.
+* Build and run the Docker application.
 
-To start, clone this repository locally.
+The first configuration file has a template at `docker/db/.env.dev.db-example`, which should
+be copied or renamed to `docker/db/.env.dev.db`. There is only one field in that file
+that you need to change, the password for your local PostgreSQL database.
 
-### Database
+The second configuration file has a template at `docker/web/.env.dev.web-example`, which
+similarly should be copied or renamed to `docker/web/.env.dev.web`. Open this file in your
+favorite text editor and update the `SECRET_KEY`, `DJANGO_SUPERUSER_PASSWORD` and
+`DB_PASSWORD` fields. Use the same value for `DB_PASSWORD` as you specified in the first
+configuration file.
 
-Install PostgreSQL server (tested on PostgreSQL 12) and create a user and a database. 
-You can intialize the database with the following script:
+When you're done, you can try building and running the Docker application. From the root
+of the repository, run:
 
-```
--- Table: public.metrics
+`docker-compose -f docker/docker-compose.yml build`
 
--- DROP TABLE public.metrics;
+This should take 5-10 minutes to complete (perhaps more, depending on bandwidth and the
+images that Docker needs to pull).
 
-CREATE TABLE public.metrics
-(
-    id bigint NOT NULL DEFAULT nextval('metrics_id_seq1'::regclass),
-    package_url text COLLATE pg_catalog."default" NOT NULL,
-    key text COLLATE pg_catalog."default" NOT NULL,
-    value text COLLATE pg_catalog."default",
-    "timestamp" timestamp without time zone NOT NULL,
-    properties jsonb,
-    CONSTRAINT metrics_pkey PRIMARY KEY (id)
-)
-WITH (
-    OIDS = FALSE
-)
-TABLESPACE pg_default;
+Now you can run the application with:
 
-ALTER TABLE public.metrics
-    OWNER to grafana;
--- Index: package_url_key_idx
+`docker-compose -f docker/docker-compose.yml run`
 
--- DROP INDEX public.package_url_key_idx;
+**NOTE**: You might see some errors the first or second time you run this. I know about
+them, but haven't had cycles to fix them yet. Press Ctrl-C to exit the application,
+and then re-run `docker-compose -f docker/docker-compose.yml run`. In my testing,
+"third time's the charm". I hope this to be fixed shortly.
 
-CREATE INDEX package_url_key_idx
-    ON public.metrics USING btree
-    (package_url COLLATE pg_catalog."default" ASC NULLS LAST, key COLLATE pg_catalog."default" ASC NULLS LAST)
-    TABLESPACE pg_default;
-```
+## First Time Usage
 
-### Azure Function
+Open a web browser to [http://localhost:8000](http://localhost:8000). You should see an 
+error message from Django. (This is also a bug that hasn't been fixed yet.)
 
-Install [.NET 5](https://dotnet.microsoft.com/download/dotnet/5.0) and the 
-[Azure Functions Core Tools](https://www.npmjs.com/package/azure-functions-core-tools).
+Now open a web browser to [http://localhost:8000/grafana/](http://localhost:8000/grafana/).
+That last slash is important. You should be asked to login. Do so using `admin/admin` and then
+change the password to whatever you'd like. Now you'll have an empty Grafana instance.
 
-From the `src/ingestion` directory, run `dotnet build` and then from the
-`src/ingestion` directory, run `func start --csharp`. You should see
-`AddMetric: [POST] http://localhost:7071/api/AddMetric` after a few seconds. This will be
-the value of `METRIC_API_ENDPOINT`.
+Click on the gear icon on the left and select `Data Sources` / `Add data source`. Choose
+PostgreSQL and use the following details:
 
-Stop the function, and then rename `src/ingestion/local.settings.json.template` to 
-`local.settings.json`, and fill in the values from what you specified when you created the database.
+* Host: `db`
+* Database: `metricdb` (unless you changed it in `.env.dev.db` above)
+* User: `metricuser` (unless you changed it in `.env.dev.db` above)
+* Password: Use what you specified in `.env.dev.db` above.
+* SSL Mode: `disable`.
+* Version: 12 (though it might work set as other versions too).
 
-```
-   "DATABASE_CONNECTION_STRING": "Server=localhost;Database=<DATABASE>;Port=5432;User Id=<USERNAME>;Password=<PASSWORD>;Ssl Mode=Require;",
-```
+Click `Save & Test`.
 
-Restart the function, and then add a sample record to ensure things are working properly:
+Now we just need to import the current dashboard configuration. Click on the icon with
+four squares (above the gear icon) on the left and select `Manage Dashboards`. Press
+`Import`.
 
-```
-curl -X POST -d '[{"package_url":"pkg:npm/test","operation":"replace","key":"testkey","values":[{"value":"hello"}]}]' "$METRIC_API_ENDPOINT"
-```
+Now open a new browser tab and access
+[this URL](https://metrics.openssf.org/grafana/d/default/metric-dashboard?editview=dashboard_json&orgId=1).
+You can get to it by accessing [metrics.openssf.org](https://metrics.openssf.org), opening
+a dashboard, clicking on the share icon on the top, then `Export` and `View JSON`. Copy the JSON
+content and paste it into your local instance and click `Save`.
 
-Check the database table to ensure that a row has been inserted into the metrics table.
-
-### Grafana
-
-Now we need to install Grafana, which you can download from
-[grafana.com/grafana/download](https://grafana.com/grafana/download). You can install the 
-open source version, and login to the site.
-
-We can now link Grafana to PostgreSQL. Click on the gear icon in Grafana, create a new data source
-(PostgreSQL), and fill in the host (localhost), database, user, and password. Click `Save & Test`.
-
-Now access the [JSON model](https://openssf-security-dashboard-dev1.westus2.cloudapp.azure.com/d/R8Sxg4xMz/project-security-metrics?editview=dashboard_json&orgId=1)
-of the current dashboard. You can copy this JSON and paste it into the settings / JSON model 
-page in your local Grafana instance. It's possible that you'll need to
-[install](https://grafana.com/docs/grafana/latest/plugins/installation/) a few plugins in order
-for the new dashboard to render properly:
-
-* Button Panel
-* Dynamic text
-* GitHub
-* JSON API
-* Pie Chart
-* Traffic Lights
-
-### Collectors
-
-Finally, we can run the collectors. First, ensure that you have Python 3 installed (tested
-with Python 9, but any recent 3.x version should work).
-
-Create a Python virtual environment (`python -mvenv venv`) and activate it
-(`venv\Scripts\activate` on Windows, `source venv/bin/activate` on Linux). Then install
-the Python requirements (`pip install -r requirements.txt`).
-
-Now create a .env file
+Now you have Grafana set up, but you don't have any data yet. Open a command prompt and check
+to see what the name of the containers are:
 
 ```
-LIBRARIES_API_KEY=XXXXXXXXXXXX
-METRIC_API_ENDPOINT=http://localhost:7071/api/AddMetric    (from above)
-GITHUB_API_TOKEN=XXXXXXXXXXXX
+PS C:\dev> docker ps -a
+CONTAINER ID   IMAGE            COMMAND                  CREATED       STATUS       PORTS                    NAMES
+cf11aee4c908   docker_nginx     "/docker-entrypoint.…"   9 hours ago   Up 9 hours   0.0.0.0:8000->80/tcp     docker_nginx_1
+cd8978797dd9   docker_web       "/usr/src/app/entryp…"   9 hours ago   Up 9 hours   8000/tcp                 docker_web_1
+010bd148d19a   redis:alpine     "docker-entrypoint.s…"   9 hours ago   Up 9 hours   6379/tcp                 docker_redis_1
+f64a3ccd0ac4   docker_grafana   "/entrypoint.sh"         9 hours ago   Up 9 hours   3000/tcp                 docker_grafana_1
+7c431e863842   postgres         "docker-entrypoint.s…"   9 hours ago   Up 9 hours   0.0.0.0:5432->5432/tcp   docker_db_1
 ```
 
-You can get a LIBRARIES_API_KEY from libraries.io from the [settings](https://libraries.io/account)
-page. and the GITHUB_API_TOKEN from GitHub.
-
-## Running It
-
-Well you made it this far, it's now time to run something through the system:
+We need to kick off a reload job on the web server:
 
 ```
-python run_jobs.py --analyze pkg:npm/left-pad
+PS C:\dev> docker exec -it docker_web_1 /bin/bash
+root@cd8978797dd9:/usr/src/app/src/management# /etc/cron.daily/openssf-reload-all
+
+OpenSSF: Starting data reload.
+[25/Apr/2021 21:25:06] INFO [load_bestpractices_data.handle:25] Gathering all best practice data.
+[25/Apr/2021 21:25:06] DEBUG [connectionpool._new_conn:971] Starting new HTTPS connection (1): bestpractices.coreinfrastructure.org:443
+[25/Apr/2021 21:25:06] DEBUG [connectionpool._new_conn:971] Starting new HTTPS connection (1): bestpractices.coreinfrastructure.org:443
+...
 ```
 
-Check to ensure that some data is collected and is available in the dashboard. (You'll need
-to refresh the page.)
+Now grab a snack, or let it run overnight. For me, this initial load took approximately 7 hours
+to complete. (This is absurdly long, and something that we'll need to fix.)
 
-To refresh all data, you'll need to run `python run_jobs.py --analyze-all`.
+Once the process has started, you can immediately access the site. The main URL
+(http://localhost:8000) should work, and Grafana should have some projects populated.
+
+## Actualy doing development work
+
+The Django application is set up to run from the host machine, so you can immediately edit
+files and see them reflected in the running application. For example, change some text
+in the `src/management/app/templates/app/index.html` file and then access http://localhost:8000.
+If you change the model, you'll need to either reload the application or execute the command
+in the running container like we did above.
+
+If you change an import job, then you'll need to ensure it's properly plumbed together, which
+means:
+
+* Creating the import job in `src/management/app/management/commands/`
+* Adding the job to `docker/web/cron.daily`.
 
 ## Reporting Issues
 
