@@ -1,0 +1,42 @@
+{% extends "./index.html" %}
+
+{% block body %}
+<div class="container-fluid" style="padding-left: 0px; padding-right: 0;margin-top:25px;">
+
+    <div class="row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-6">
+            <h2>Welcome!</h2>
+            <p>
+                The <strong>OpenSSF Security Metrics Project</strong> was created to collect,
+                aggregate, analyze, and communicate relevant security data about open source
+                projects. It leverages existing data sources, including various OpenSSF projects
+                and data available through public APIs.
+            </p>
+            <p>
+                This project should be considered "early alpha" quality. Features may change at
+                any time, the system may become unavailable, and URLs may change. It is not
+                ready for anything more than early testing.
+            </p>
+            <p>
+                To get started, search for a project in the form below, jump straight
+                to the <a href="/grafana/d/default/metric-dashboard?orgId=1">dashboard</a>,
+                or try out a few projects like
+                {% for project in sample_projects %}{% if not forloop.first %}{% if forloop.last %}, or {% else %}, {% endif %}{% endif %}<a href="/grafana/d/default/metric-dashboard?orgId=1&var-PackageURL={{ project.package_url|urlencode }}">
+                {{ project.full_name_version }}</a>{% endfor %}
+                .
+            </p>
+            <p>
+                <form class="d-flex justify-content-center" method="get" action="/search">
+                    <input type="text" name="q" placeholder="Search..." size="30"/>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                </form>
+            </p>
+        </div>
+        <div class="col-lg-3"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}
+{% endblock footer %}

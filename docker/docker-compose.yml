@@ -1,54 +1,13 @@
-version: "3.7"
+version: "3.8"
 
 services:
-  web:
-    build:
+  grafana:
+    build: 
       context: ..
-      dockerfile: docker/web/Dockerfile
-    working_dir: /usr/src/app/src
-    command: gunicorn core.wsgi:application --reload --bind 0.0.0.0:8000
+      dockerfile: docker/grafana/Dockerfile
+    restart: always      
     volumes:
-      - ../src:/usr/src/app/src
-      - static_volume:/usr/src/static
-      - media_volume:/usr/src/media
-      - cache_volume:/usr/src/cache
-      - log_volume:/usr/src/log
-    expose:
-      - 8000
-    env_file:
-      - web/.env.dev.web
-    depends_on:
-      - db
-      - azurite
-
-  worker:
-    build:
-      context: ..
-      dockerfile: docker/worker/Dockerfile
-    command: python orchestrator.py
-    env_file:
-      - worker/.env.dev.worker
-    depends_on:
-      - azurite
-
-  worker-web:
-    build:
-      context: ..
-      dockerfile: docker/worker-web/Dockerfile
-    working_dir: /usr/src/app/src
-    command: python manage.py run_web_jobs
-    volumes:
-      - ../src:/usr/src/app/src
-      - static_volume:/usr/src/static
-      - media_volume:/usr/src/media
-      - cache_volume:/usr/src/cache
-      - log_volume:/usr/src/log
-    env_file:
-      - web/.env.dev.web
-    depends_on:
-      - db
-      - azurite
-      - redis
+      - grafana_volume:/var/lib/grafana
 
   db:
     image: postgres
@@ -62,27 +21,36 @@ services:
 
   nginx:
     build: ./nginx
+    restart: always    
     volumes:
-      - static_volume:/usr/src/static
-      - media_volume:/usr/src/media
+      - ./nginx/conf/nginx-development.conf:/etc/nginx/conf.d/metrics.conf
     ports:
       - 8000:80
     depends_on:
-      - web
+      - grafana
 
-  azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
-    hostname: azurite
+  web:
+    build:
+      context: ..
+      dockerfile: docker/web/Dockerfile
+    restart: always      
+    working_dir: /usr/src/app/src/management
+    command: gunicorn management.wsgi:application --timeout 600 --workers 3 --reload --bind 0.0.0.0:8000
     volumes:
-      - azurite_volume:/data
-    ports:
-      - 20000:10000
-      - 20001:10001
+      - ../src:/usr/src/app/src
+      - static_volume:/usr/src/static
+      - media_volume:/usr/src/media
+      - cache_volume:/usr/src/cache
+      - log_volume:/usr/src/log
+    expose:
+      - 8000
+    env_file:
+      - web/.env.dev.web
+    depends_on:
+      - db
 
   redis:
     image: redis:alpine
-    ports:
-      - 26379:6379
     volumes:
       - redis_volume:/data
 
@@ -90,7 +58,7 @@ volumes:
   postgresql_data:
   static_volume:
   media_volume:
-  azurite_volume:
   cache_volume:
   log_volume:
   redis_volume:
+  grafana_volume:

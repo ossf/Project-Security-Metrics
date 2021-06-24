@@ -1,5 +1,5 @@
 # pull official base image
-FROM python:3.8-buster
+FROM python:3.9.3-buster
 
 # set work directory
 WORKDIR /usr/src/app
@@ -25,19 +25,24 @@ RUN apt-get update && \
 		make \
 		dos2unix \
 		netcat \
-		yarnpkg
+		yarnpkg \
+		cron
+
+RUN service cron start
 
 # install dependencies
-RUN pip install --upgrade --use-feature=2020-resolver pip
+RUN pip install --upgrade pip
 COPY src/requirements.txt .
-RUN pip install --use-feature=2020-resolver -r requirements.txt
+RUN pip install -r requirements.txt
 
 # copy entrypoint.sh
 COPY docker/web/entrypoint.sh .
 RUN dos2unix ./entrypoint.sh
+RUN chmod +x ./entrypoint.sh
 
-# copy worker config
-COPY docker/worker/config.json .
+COPY docker/web/cron.daily /etc/cron.daily/openssf-reload-all
+RUN dos2unix /etc/cron.daily/openssf-reload-all
+RUN chmod +x /etc/cron.daily/openssf-reload-all
 
 # run entrypoint.sh
 ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
