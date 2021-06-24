@@ -11,11 +11,13 @@ page.
 
 Setting up a basic development environment is straightforward:
 
-* Install [Docker Engine](https://docs.docker.com/engine/install/) and 
-  [Docker Compose](https://docs.docker.com/compose/install/).
-* Clone this repository.
-* Create two configuration files from provided templates.
-* Build and run the Docker application.
+1. Clone the repository (`git clone https://github.com/ossf/Project-Security-Metrics`).
+1. Ensure that you have [Docker Compose](https://docs.docker.com/compose/) installed.
+1. Copy `docker/web/.env.dev.web-example` to `docker/web/.env.dev.web` and modify the values
+   in that file for your local environment.
+1. Do the same thing for `docker/db/.env.dev.db-example` and `docker/worker/.env.dev.worker-example`.
+1. Run `start.ps1`.
+1. Open https://127.0.0.1:8000
 
 The first configuration file has a template at `docker/db/.env.dev.db-example`, which should
 be copied or renamed to `docker/db/.env.dev.db`. There is only one field in that file
