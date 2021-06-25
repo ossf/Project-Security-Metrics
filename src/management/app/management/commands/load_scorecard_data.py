@@ -29,48 +29,95 @@ class Command(BaseCommand):
         try:
             payloads = []
 
-            res = requests.get(
-                "https://storage.googleapis.com/ossf-scorecards/latest.json", timeout=120
+            logging.info("Querying BigQuery")
+            res = subprocess.run(
+                [
+                    "bq",
+                    "query",
+                    "--format",
+                    "prettyjson",
+                    "--project_id",
+                    "openssf",
+                    "--nouse_legacy_sql",
+                    "SELECT partition_id FROM openssf.scorecardcron.INFORMATION_SCHEMA.PARTITIONS ORDER BY partition_id DESC LIMIT 1",
+                ],
+                timeout=120,
+                capture_output=True,
             )
-            if res.status_code != 200:
-                logging.warning("Failure fetching latest JSON: %s", res.status_code)
+            logging.info(res.returncode)
+            logging.info(res.stdout)
+            query_js = json.loads(res.stdout.decode("utf-8"))
+            partition_id = query_js[0].get("partition_id")
+            if not partition_id:
+                logging.warn("Invalid partition identifier.")
                 return
 
-            for line in res.text.splitlines():
-                try:
-                    data = json.loads(line.strip().strip(","))
-                except Exception as msg:
-                    logging.warning("Invalid JSON: [%s]", line)
-                    continue
+            logging.info("Extracting BigQuery (partition id: %s)", partition_id)
+            res = subprocess.run(
+                [
+                    "bq",
+                    "extract",
+                    "--project_id",
+                    "openssf",
+                    "--destination_format=NEWLINE_DELIMITED_JSON",
+                    f"openssf:scorecardcron.scorecard${partition_id}",
+                    "gs://ossf-scorecards/latest.json",
+                ],
+                timeout=120,
+                capture_output=True,
+            )
+            logging.info(res.stderr)
+            if "Current status: DONE" not in res.stderr.decode("utf-8"):
+                logging.warn("Error extracting dataset.")
+                return
 
-                package_url = url2purl.url2purl("https://" + data.get("Repo"))
-                if not package_url:
-                    logging.warning(
-                        "Unable to identify Package URL from repository: [%s]", data.get("Repo")
-                    )
-                    continue
+            logging.info("Downloading dataset")
+            if os.path.exists("/tmp/latest.json"):
+                os.remove("/tmp/latest.json")
 
-                with transaction.atomic():
-                    date_ = parse(data.get("Date"))
-                    package, _ = Package.objects.get_or_create(package_url=str(package_url))
+            res = subprocess.check_output(
+                ["gsutil", "cp", "gs://ossf-scorecards/latest.json", "/tmp"]
+            )
+            logging.info(res)
 
-                    Metric.objects.filter(
-                        package=package, key__startswith="openssf.scorecard.raw."
-                    ).delete()
+            with open("/tmp/latest.json", "r") as f:
+                for line in f:
+                    try:
+                        data = json.loads(line.strip().strip(","))
+                    except Exception as msg:
+                        logging.warning("Invalid JSON: [%s]", line)
+                        continue
 
-                    for check in data.get("Checks", []):
-                        check_name = check.get("CheckName").lower().strip()
-                        try:
-                            metric, _ = Metric.objects.get_or_create(
-                                package=package, key=f"openssf.scorecard.raw.{check_name}"
-                            )
-                            metric.value = str(check.get("Pass")).lower()
-                            metric.properties = check
-                            metric.save()
-                        except Exception as msg:
-                            logging.warning(
-                                "Failed to save data (%s, %s): %s", package_url, check_name, msg
-                            )
+                    package_url = url2purl.url2purl("https://" + data.get("Repo"))
+                    if not package_url:
+                        logging.warning(
+                            "Unable to identify Package URL from repository: [%s]", data.get("Repo")
+                        )
+                        continue
+
+                    with transaction.atomic():
+                        date_ = parse(data.get("Date"))
+                        package, _ = Package.objects.get_or_create(package_url=str(package_url))
+
+                        Metric.objects.filter(
+                            package=package, key__startswith="openssf.scorecard.raw."
+                        ).delete()
+
+                        for check in data.get("Checks", []):
+                            check_name = check.get("Name").lower().strip()
+                            try:
+                                metric, _ = Metric.objects.get_or_create(
+                                    package=package, key=f"openssf.scorecard.raw.{check_name}"
+                                )
+                                metric.value = str(check.get("Pass")).lower()
+                                metric.properties = check
+                                metric.save()
+                            except Exception as msg:
+                                logging.warning(
+                                    "Failed to save data (%s, %s): %s", package_url, check_name, msg
+                                )
+            os.remove("/tmp/latest.json")
+
         except Exception as msg:
             traceback.print_exc()
             logging.warn("Error: %s", msg)
