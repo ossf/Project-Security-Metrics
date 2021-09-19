@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase
 from django.test import Client
 from app.models import Package
@@ -20,20 +21,20 @@ class ViewApiGetPackageTests(TestCase):
 
     def test_not_found(self):
         response = client.get("/api/1/get-project?package_url=pkg:github/not_found/not_found")
-        print(response.content)
         self.assertEqual(response.status_code, 404)
+        self.assertEqual(json.loads(response.content)["message"], "Not Found.")
 
     def test_no_parameters(self):
         response = client.get("/api/1/get-project")
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.content, b"Required, package_url or url.")
+        self.assertEqual(json.loads(response.content)["message"], "Required, package_url or url.")
 
     def test_invalid_package_url(self):
         response = client.get("/api/1/get-project?package_url=invalid")
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.content, b"Invalid Package URL.")
+        self.assertEqual(json.loads(response.content)["message"], "Invalid Package URL.")
 
     def test_invalid_url(self):
         response = client.get("/api/1/get-project?url=invalid")
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.content, b"Invalid URL.")
+        self.assertEqual(json.loads(response.content)["message"], "Invalid URL.")

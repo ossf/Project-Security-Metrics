@@ -8,8 +8,9 @@ from django.core import serializers
 from django.core.management import call_command, find_commands, get_commands
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseNotFound, JsonResponse
 from django.http.response import HttpResponseBadRequest
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import HttpResponseRedirect, get_object_or_404, render
 from packageurl import PackageURL
 from packageurl.contrib.url2purl import url2purl
@@ -81,19 +82,25 @@ def api_get_package(request: HttpRequest) -> HttpResponse:
     package_url = request.GET.get("package_url")
     url = request.GET.get("url")
     if not (package_url or url):
-        return HttpResponseBadRequest("Required, package_url or url.")    
+        return __get_bad_request_with_json("Required, package_url or url.")
 
     if package_url:
         try:
             purl = PackageURL.from_string(package_url)
         except ValueError:
-            return HttpResponseBadRequest("Invalid Package URL.")
+            return __get_bad_request_with_json("Invalid Package URL.") 
     elif url:
         purl = url2purl(url)
         if not purl:
-            return HttpResponseBadRequest("Invalid URL.")
-
-    package = get_object_or_404(Package, package_url=str(purl))
+            return __get_bad_request_with_json("Invalid URL.")
+    try:
+        package = Package.objects.get(package_url=str(purl))
+    except ObjectDoesNotExist:
+        return HttpResponseNotFound(
+            __to_serialized_error_json("Not Found."),
+            content_type="application/json"
+        )
+        
     data = {"package_url": package.package_url}
     metrics = []
 
@@ -124,3 +131,15 @@ def search_package(request: HttpRequest) -> HttpResponse:
 
 def general_about(request: HttpRequest) -> HttpResponse:
     return render(request, "app/about.html", {})
+
+def __get_bad_request_with_json(message: str) -> HttpResponseBadRequest:
+    return HttpResponseBadRequest(
+        __to_serialized_error_json(message),
+        content_type="application/json"
+    )
+
+def __to_serialized_error_json(message: str) -> str:
+    error_json = {
+        "message": message
+    }
+    return json.dumps(error_json, indent=2)
