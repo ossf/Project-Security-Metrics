@@ -79,18 +79,19 @@ def api_get_package(request: HttpRequest) -> HttpResponse:
     """
     purl = None
     package_url = request.GET.get("package_url")
+    url = request.GET.get("url")
+    if not (package_url or url):
+        return HttpResponseBadRequest("Required, package_url or url.")    
+
     if package_url:
-        purl = PackageURL.from_string(package_url)
-        if not purl:
+        try:
+            purl = PackageURL.from_string(package_url)
+        except ValueError:
             return HttpResponseBadRequest("Invalid Package URL.")
-    else:
-        url = request.GET.get("url")
-        if url:
-            purl = url2purl(url)
-            if not purl:
-                return HttpResponseBadRequest("Invalid URL.")
-    if not purl:
-        return HttpResponseBadRequest("Required, package_url or url.")
+    elif url:
+        purl = url2purl(url)
+        if not purl:
+            return HttpResponseBadRequest("Invalid URL.")
 
     package = get_object_or_404(Package, package_url=str(purl))
     data = {"package_url": package.package_url}
