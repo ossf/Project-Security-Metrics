@@ -7,7 +7,7 @@ black==20.8b1
 certifi==2020.12.5
 chardet==3.0.4
 click==7.1.2
-Django==3.1.12
+Django==3.1.13
 django-debug-toolbar==3.2.1
 fire==0.3.1
 gql==3.0.0a5
