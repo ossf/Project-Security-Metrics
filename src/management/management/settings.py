@@ -167,7 +167,7 @@ if bool(os.getenv("CACHE_ENABLED")):
         "default": {
             "BACKEND": "django_redis.cache.RedisCache",
             "LOCATION": "redis://redis:6379/1",
-            "OPTIONS": {"CLIENT_CACHE": "django_redis.client.Defaultclient"},
+            "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
         },
         "file_cache": {
             "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",

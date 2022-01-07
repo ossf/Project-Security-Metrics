@@ -39,7 +39,7 @@ class Command(BaseCommand):
                     "--project_id",
                     "openssf",
                     "--nouse_legacy_sql",
-                    "SELECT partition_id FROM openssf.scorecardcron.INFORMATION_SCHEMA.PARTITIONS ORDER BY partition_id DESC LIMIT 1",
+                    "SELECT partition_id FROM openssf.scorecardcron.INFORMATION_SCHEMA.PARTITIONS WHERE table_name='scorecard' AND partition_id != '__NULL__' ORDER BY partition_id DESC LIMIT 1",
                 ],
                 timeout=120,
                 capture_output=True,

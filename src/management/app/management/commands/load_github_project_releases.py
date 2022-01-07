@@ -26,6 +26,9 @@ class Command(BaseCommand):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if not GITHUB_API_TOKENS:
+            raise CommandError("No GitHub API tokens configured, skipping.")
+
         github_token = GITHUB_API_TOKENS.split(",")[0]
         headers = {"Authorization": f"token {github_token}"}
         transport = AIOHTTPTransport(url=self.GITHUB_API_ENDPOINT, headers=headers)

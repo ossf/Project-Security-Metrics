@@ -47,23 +47,6 @@ def home(request: HttpRequest) -> HttpResponse:
 
     return render(request, "app/home.html", {"sample_projects": sample_projects})
 
-
-def add_package(request: HttpRequest) -> HttpResponse:
-    package_url = request.POST.get("package_url")
-    Package.objects.get_or_create(package_url=package_url)
-    return HttpResponseRedirect("/")
-
-
-def run_command(request: HttpRequest) -> HttpResponse:
-    command = request.GET.get("name")
-    response = call_command(command)
-    return HttpResponse(str(response))
-
-
-def show_grafana(request: HttpRequest) -> HttpResponse:
-    return render(request, "app/grafana.html", {})
-
-
 def api_get_package(request: HttpRequest) -> HttpResponse:
     """
     Retrieves metrics for a given package.

@@ -20,7 +20,8 @@ class AppConfig(_AppConfig):
 
     name = "app"
     verbose_name = "OpenSSF Project Metrics"
-
+    default_auto_field = 'django.db.models.BigAutoField'
+    
     logger = logging.getLogger(__name__)
 
     _is_init_completed = False

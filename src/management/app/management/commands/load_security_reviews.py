@@ -50,14 +50,18 @@ class Command(BaseCommand):
 
             for root, _, files in os.walk(CLONE_DIR, topdown=False):
                 for name in files:
-                    self.process_file(
-                        os.path.join(root, name),
-                    )
+                    try:
+                        self.process_file(
+                            os.path.join(root, name),
+                        )
+                    except:
+                        logging.warning("Error processing file: %s", name)
 
         shutil.rmtree(CLONE_DIR)
         logging.info("Success!")
 
     def process_file(self, filename):
+        logging.info("Processing %s", filename)
         if not os.path.isfile(filename):
             logging.warning("Unable to access: %s", filename)
             return
