@@ -39,7 +39,7 @@ images that Docker needs to pull).
 
 Now you can run the application with:
 
-`docker-compose -f docker/docker-compose.yml run`
+`docker-compose -f docker/docker-compose.yml up`
 
 **NOTE**: You might see some errors the first or second time you run this. I know about
 them, but haven't had cycles to fix them yet. Press Ctrl-C to exit the application,
