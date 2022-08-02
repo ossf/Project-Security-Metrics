@@ -31,8 +31,9 @@ jobs:
         pushd docker
         for configfile in web/.env.dev.web-example db/.env.dev.db-example worker/.env.dev.worker-example
         do
-          cp $configfile $(echo $configfile | sed 's/-example//')
+          cp -v $configfile $(echo $configfile | sed 's/-example//')
         done
+        find . -type f
         dbpass=$(pwgen 24 1)
         djangopass=$(pwgen 24 1)
         uuid=$(uuidgen)
