@@ -31,7 +31,7 @@ jobs:
         pushd docker
         for configfile in web/.env.dev.web-example db/.env.dev.db-example worker/.env.dev.worker-example
         do
-          cp $configfile $(basename $configfile -example)
+          cp $configfile $(echo $configfile | sed 's/-example//')
         done
         dbpass=$(pwgen 24 1)
         djangopass=$(pwgen 24 1)
