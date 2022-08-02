@@ -33,7 +33,6 @@ jobs:
         do
           cp -v $configfile $(echo $configfile | sed 's/-example//')
         done
-        find . -type f
         dbpass=$(pwgen 24 1)
         djangopass=$(pwgen 24 1)
         uuid=$(uuidgen)
@@ -41,7 +40,7 @@ jobs:
         sed -i 's/\<USE THE SAME PASSWORD YOU CREATED IN docker\/db\/.env.dev.db/$dbpass/g' web/.env.dev.web
         sed -i 's/\<CREATE A PASSWORD\>/$djangopass/g' web/.env.dev.web
         sed -i 's/\<CREATE A UUID OR RANDOM STRING\>/$uuid/g' web/.env.dev.web
-        sed -i 's/\<ADD GITHUB ACCESS TOKEN\>/$GITHUB_TOKEN/g' file
+        sed -i 's/\<ADD GITHUB ACCESS TOKEN\>/$GITHUB_TOKEN/g' worker/.env.dev.worker
         popd
     - name: Docker build and run
       run: |
