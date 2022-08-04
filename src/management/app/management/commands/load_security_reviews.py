@@ -112,12 +112,19 @@ class Command(BaseCommand):
                 purl = PackageURL.from_string(package_url)
                 if not purl:
                     logging.warning(
-                        "Unable to parse Package URL: [%s] in file [%s]", package_url, filename
+                        "Unable to parse Package URL: [%s] in file [%s]",
+                        package_url,
+                        filename,
                     )
                     continue
 
                 purl_nv = PackageURL(
-                    purl.type, purl.namespace, purl.name, None, purl.qualifiers, purl.subpath
+                    purl.type,
+                    purl.namespace,
+                    purl.name,
+                    None,
+                    purl.qualifiers,
+                    purl.subpath,
                 )
                 if purl_nv in seen_package_url_nv:
                     # We only need one review per non-versioned PackageURL

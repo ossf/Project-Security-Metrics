@@ -8,61 +8,68 @@ import json.encoder
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0003_auto_20210330_1823'),
+        ("app", "0003_auto_20210330_1823"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='metric',
-            options={'ordering': ['key']},
+            name="metric",
+            options={"ordering": ["key"]},
         ),
         migrations.AlterModelOptions(
-            name='package',
-            options={'ordering': ['package_url']},
+            name="package",
+            options={"ordering": ["package_url"]},
         ),
         migrations.RenameField(
-            model_name='metric',
-            old_name='value_text',
-            new_name='value',
+            model_name="metric",
+            old_name="value_text",
+            new_name="value",
         ),
         migrations.RemoveField(
-            model_name='metric',
-            name='timestamp',
+            model_name="metric",
+            name="timestamp",
         ),
         migrations.RemoveField(
-            model_name='metric',
-            name='value_integer',
+            model_name="metric",
+            name="value_integer",
         ),
         migrations.AddField(
-            model_name='metric',
-            name='last_updated',
+            model_name="metric",
+            name="last_updated",
             field=models.DateTimeField(auto_now=True, null=True),
         ),
         migrations.AlterField(
-            model_name='metric',
-            name='key',
+            model_name="metric",
+            name="key",
             field=models.CharField(max_length=256),
         ),
         migrations.AlterField(
-            model_name='metric',
-            name='properties',
-            field=models.JSONField(blank=True, decoder=json.decoder.JSONDecoder, encoder=json.encoder.JSONEncoder, null=True),
+            model_name="metric",
+            name="properties",
+            field=models.JSONField(
+                blank=True,
+                decoder=json.decoder.JSONDecoder,
+                encoder=json.encoder.JSONEncoder,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='package',
-            name='last_updated',
+            model_name="package",
+            name="last_updated",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddIndex(
-            model_name='metric',
-            index=models.Index(fields=['package', 'key'], name='metric_package_cd39db_idx'),
+            model_name="metric",
+            index=models.Index(
+                fields=["package", "key"], name="metric_package_cd39db_idx"
+            ),
         ),
         migrations.AlterModelTable(
-            name='metric',
-            table='metric',
+            name="metric",
+            table="metric",
         ),
         migrations.AlterModelTable(
-            name='package',
-            table='package',
+            name="package",
+            table="package",
         ),
     ]

@@ -7,25 +7,38 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0001_initial'),
+        ("app", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='package',
-            old_name='name',
-            new_name='package_url',
+            model_name="package",
+            old_name="name",
+            new_name="package_url",
         ),
         migrations.CreateModel(
-            name='Metric',
+            name="Metric",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('key', models.CharField(max_length=256)),
-                ('value_integer', models.IntegerField(blank=True, null=True)),
-                ('value_text', models.TextField(blank=True, null=True)),
-                ('properties', models.JSONField(blank=True, null=True)),
-                ('timestamp', models.DateTimeField(blank=True, null=True)),
-                ('package', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.package')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("key", models.CharField(max_length=256)),
+                ("value_integer", models.IntegerField(blank=True, null=True)),
+                ("value_text", models.TextField(blank=True, null=True)),
+                ("properties", models.JSONField(blank=True, null=True)),
+                ("timestamp", models.DateTimeField(blank=True, null=True)),
+                (
+                    "package",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="app.package"
+                    ),
+                ),
             ],
         ),
     ]

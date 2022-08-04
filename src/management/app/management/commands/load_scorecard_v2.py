@@ -21,16 +21,18 @@ class Command(BaseCommand):
     """
     Refreshes data from the OpenSSF Scorecard-v2 project.
     """
-    
+
     def handle(self, *args, **options):
         """
         Loads data from the public data collected by the OpenSSF Scorecard-v2 project.
         """
         logging.info("Gathering all scorecard data.")
-    
+
         num_imported = 0
         sample_filename = glob.glob("/tmp/bq_extract-*.json")
-        if not sample_filename or os.stat(sample_filename[0]).st_mtime < (time.time() - (60 * 60 * 24)):
+        if not sample_filename or os.stat(sample_filename[0]).st_mtime < (
+            time.time() - (60 * 60 * 24)
+        ):
             self.load_from_bigquery()
         else:
             logging.info("BigQuery data was retrieved recently, skipping.")
@@ -87,11 +89,11 @@ class Command(BaseCommand):
                 "--project_id",
                 "openssf",
                 "--destination_format=NEWLINE_DELIMITED_JSON",
-                f"openssf:scorecardcron.scorecard-v2${partition_id}", 
-                "gs://ossf-scorecards-dev/bq_extract-*.json"
+                f"openssf:scorecardcron.scorecard-v2${partition_id}",
+                "gs://ossf-scorecards-dev/bq_extract-*.json",
             ],
             timeout=300,
-            capture_output=True
+            capture_output=True,
         )
         if "Current status: DONE" not in res.stderr.decode("utf-8"):
             logging.warn("Error extracting dataset.")
@@ -110,14 +112,14 @@ class Command(BaseCommand):
 
         res = subprocess.check_output(
             ["gsutil", "cp", "gs://ossf-scorecards-dev/bq_extract-*.json", "/tmp"],
-            timeout=1200
+            timeout=1200,
         )
         logging.debug("Results: %s", res)
 
     def import_record(self, data):
         _date = parse(data.get("date"))
         _repo_name = data.get("repo", {}).get("name")
-        
+
         package_url = url2purl.url2purl("https://" + _repo_name)
         package = Package.objects.get_or_create(package_url=str(package_url))[0]
 
@@ -138,4 +140,9 @@ class Command(BaseCommand):
                     metric.last_updated = _date
                     metric.save()
                 except Exception as msg:
-                    logging.warning("Failed to save data (%s, %s): %s", package_url, _check_name, msg)
+                    logging.warning(
+                        "Failed to save data (%s, %s): %s",
+                        package_url,
+                        _check_name,
+                        msg,
+                    )

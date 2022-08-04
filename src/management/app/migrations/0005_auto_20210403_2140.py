@@ -8,24 +8,30 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('app', '0004_auto_20210403_0835'),
+        ("app", "0004_auto_20210403_0835"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='metric',
-            name='last_updated',
-            field=models.DateTimeField(auto_now=True, db_index=True, default=django.utils.timezone.now),
+            model_name="metric",
+            name="last_updated",
+            field=models.DateTimeField(
+                auto_now=True, db_index=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AlterField(
-            model_name='metric',
-            name='properties',
-            field=models.JSONField(blank=True, encoder=django.core.serializers.json.DjangoJSONEncoder, null=True),
+            model_name="metric",
+            name="properties",
+            field=models.JSONField(
+                blank=True,
+                encoder=django.core.serializers.json.DjangoJSONEncoder,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='package',
-            name='last_updated',
+            model_name="package",
+            name="last_updated",
             field=models.DateTimeField(auto_now=True, db_index=True),
         ),
     ]

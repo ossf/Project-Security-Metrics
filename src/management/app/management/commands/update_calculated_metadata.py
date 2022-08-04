@@ -43,15 +43,23 @@ class Command(BaseCommand):
         logging.debug("handle_snyk(%s)", package)
         snyk_url_map = {"npm": "npm-package", "docker": "docker", "pypi": "pypi"}
         if purl.type in ["npm", "docker", "pypi"]:
-            metric = Metric(package=package, key="openssf.calc-metadata.snyk-advisory-url")
-            metric.value = f"https://snyk.io/advisor/{snyk_url_map[purl.type]}/{package.full_name}"
+            metric = Metric(
+                package=package, key="openssf.calc-metadata.snyk-advisory-url"
+            )
+            metric.value = (
+                f"https://snyk.io/advisor/{snyk_url_map[purl.type]}/{package.full_name}"
+            )
             metric.save()
 
     def handle_isitmaintained(self, package: Package, purl: PackageURL):
         logging.debug("handle_snyk(%s)", package)
         if purl.type == "github":
-            metric = Metric(package=package, key="openssf.calc-metadata.isitmaintained-url")
-            metric.value = f"https://isitmaintained.com/project/{purl.namespace}/{purl.name}"
+            metric = Metric(
+                package=package, key="openssf.calc-metadata.isitmaintained-url"
+            )
+            metric.value = (
+                f"https://isitmaintained.com/project/{purl.namespace}/{purl.name}"
+            )
             metric.save()
 
     def handle_project_url(self, package: Package, purl: PackageURL):
@@ -59,7 +67,9 @@ class Command(BaseCommand):
         try:
             url = self.purl2url(purl)
             if url:
-                metric = Metric(package=package, key="openssf.calc-metadata.project-url")
+                metric = Metric(
+                    package=package, key="openssf.calc-metadata.project-url"
+                )
                 metric.value = url
                 metric.save()
         except Exception as msg:

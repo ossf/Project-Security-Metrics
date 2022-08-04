@@ -45,7 +45,8 @@ class Command(BaseCommand):
                 package_url = url2purl.url2purl(row.get("url"))
                 if not package_url:
                     logging.warning(
-                        "Unable to identify Package URL from repository: [%s]", row.get("url")
+                        "Unable to identify Package URL from repository: [%s]",
+                        row.get("url"),
                     )
                     continue
 
@@ -67,7 +68,10 @@ class Command(BaseCommand):
                             metric.save()
                         except Exception as msg:
                             logging.warning(
-                                "Failed to save data (%s, %s): %s", package_url, key, msg
+                                "Failed to save data (%s, %s): %s",
+                                package_url,
+                                key,
+                                msg,
                             )
         except Exception as msg:
             traceback.print_exc()

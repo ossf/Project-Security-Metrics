@@ -91,13 +91,16 @@ class Command(BaseCommand):
                     package_url = url2purl.url2purl("https://" + data.get("Repo"))
                     if not package_url:
                         logging.warning(
-                            "Unable to identify Package URL from repository: [%s]", data.get("Repo")
+                            "Unable to identify Package URL from repository: [%s]",
+                            data.get("Repo"),
                         )
                         continue
 
                     with transaction.atomic():
                         date_ = parse(data.get("Date"))
-                        package, _ = Package.objects.get_or_create(package_url=str(package_url))
+                        package, _ = Package.objects.get_or_create(
+                            package_url=str(package_url)
+                        )
 
                         Metric.objects.filter(
                             package=package, key__startswith="openssf.scorecard.raw."
@@ -107,14 +110,18 @@ class Command(BaseCommand):
                             check_name = check.get("Name").lower().strip()
                             try:
                                 metric, _ = Metric.objects.get_or_create(
-                                    package=package, key=f"openssf.scorecard.raw.{check_name}"
+                                    package=package,
+                                    key=f"openssf.scorecard.raw.{check_name}",
                                 )
                                 metric.value = str(check.get("Pass")).lower()
                                 metric.properties = check
                                 metric.save()
                             except Exception as msg:
                                 logging.warning(
-                                    "Failed to save data (%s, %s): %s", package_url, check_name, msg
+                                    "Failed to save data (%s, %s): %s",
+                                    package_url,
+                                    check_name,
+                                    msg,
                                 )
             os.remove("/tmp/latest.json")
 

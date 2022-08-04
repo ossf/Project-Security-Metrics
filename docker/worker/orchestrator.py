@@ -51,11 +51,13 @@ class Orchestrator:
         """Initialize a new Orchestrator object."""
 
         self.inbound_queue = Orchestrator.initialize_queue(
-            os.getenv("DEFAULT_QUEUE_CONNECTION_STRING"), os.getenv("DEFAULT_QUEUE_WORK_TO_DO")
+            os.getenv("DEFAULT_QUEUE_CONNECTION_STRING"),
+            os.getenv("DEFAULT_QUEUE_WORK_TO_DO"),
         )
 
         self.outbound_queue = Orchestrator.initialize_queue(
-            os.getenv("DEFAULT_QUEUE_CONNECTION_STRING"), os.getenv("DEFAULT_QUEUE_WORK_COMPLETE")
+            os.getenv("DEFAULT_QUEUE_CONNECTION_STRING"),
+            os.getenv("DEFAULT_QUEUE_WORK_COMPLETE"),
         )
 
         try:
@@ -84,14 +86,18 @@ class Orchestrator:
         try:
             content = json.loads(message.content)
         except Exception as msg:
-            logger.warning("Message content [%s] was not JSON: %s", message.content, msg)
+            logger.warning(
+                "Message content [%s] was not JSON: %s", message.content, msg
+            )
             return
 
         success = False
         result = None
 
         if content.get("message-type") != "job-request":
-            logger.debug("Message type [%s] was not a job-request.", content.get("message-type"))
+            logger.debug(
+                "Message type [%s] was not a job-request.", content.get("message-type")
+            )
             return  # Do not delete message
 
         target = content.get("target")
@@ -131,14 +137,20 @@ class Orchestrator:
                 del private_env["DEFAULT_QUEUE_CONNECTION_STRING"]
                 timeout = int(job.get("timeout", "60"))
                 try:
-                    result = subprocess.check_output(cmd, env=private_env, timeout=timeout)
+                    result = subprocess.check_output(
+                        cmd, env=private_env, timeout=timeout
+                    )
                     result = json.loads(result)
                     success = True
                 except CalledProcessError as msg:
-                    logger.warning("Command [%s] did not return successfully: %s", cmd, msg)
+                    logger.warning(
+                        "Command [%s] did not return successfully: %s", cmd, msg
+                    )
                     success = False
                 except subprocess.TimeoutExpired as msg:
-                    logger.warning("Command [%s] took too long to complete: %s", cmd, msg)
+                    logger.warning(
+                        "Command [%s] took too long to complete: %s", cmd, msg
+                    )
                     success = False
                 except Exception as msg:
                     logger.warning("Error processing [%s]: %s", cmd, msg, exc_info=True)

@@ -36,7 +36,8 @@ class RefreshScorecard(BaseJob):
             payloads = []
 
             res = requests.get(
-                "https://storage.googleapis.com/ossf-scorecards/latest.json", timeout=120
+                "https://storage.googleapis.com/ossf-scorecards/latest.json",
+                timeout=120,
             )
             if res.status_code != 200:
                 logging.warning("Failure fetching latest JSON: %s", res.status_code)
@@ -52,7 +53,8 @@ class RefreshScorecard(BaseJob):
                 package_url = url2purl.url2purl("https://" + data.get("Repo"))
                 if not package_url:
                     logging.warning(
-                        "Unable to identify Package URL from repository: [%s]", data.get("Repo")
+                        "Unable to identify Package URL from repository: [%s]",
+                        data.get("Repo"),
                     )
                     continue
 
@@ -64,7 +66,12 @@ class RefreshScorecard(BaseJob):
                         "package_url": str(package_url),
                         "operation": "replace",
                         "key": f"openssf.scorecard.raw.{check_name}",
-                        "values": [{"value": str(check.get("Pass")).lower(), "properties": check}],
+                        "values": [
+                            {
+                                "value": str(check.get("Pass")).lower(),
+                                "properties": check,
+                            }
+                        ],
                     }
                     payloads.append(payload)
             res = requests.post(self.METRIC_API_ENDPOINT, json=payloads, timeout=120)

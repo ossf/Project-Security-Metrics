@@ -12,7 +12,9 @@ logging.basicConfig(level=logging.INFO)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--analyze", help="PackageURL to analyze through all collectors.")
-parser.add_argument("--analyze-all", action="store_true", help="Analyze all packages available.")
+parser.add_argument(
+    "--analyze-all", action="store_true", help="Analyze all packages available."
+)
 args = parser.parse_args()
 
 if args.analyze_all:

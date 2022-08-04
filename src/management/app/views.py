@@ -47,6 +47,7 @@ def home(request: HttpRequest) -> HttpResponse:
 
     return render(request, "app/home.html", {"sample_projects": sample_projects})
 
+
 def api_get_package(request: HttpRequest) -> HttpResponse:
     """
     Retrieves metrics for a given package.

@@ -19,7 +19,9 @@ class Command(BaseCommand):
     submit it to the Metrics API.
     """
 
-    BEST_PRACTICES_ROOT_URL = "https://bestpractices.coreinfrastructure.org/en/projects.json"
+    BEST_PRACTICES_ROOT_URL = (
+        "https://bestpractices.coreinfrastructure.org/en/projects.json"
+    )
 
     def handle(self, *args, **options):
         logging.info("Gathering all best practice data.")
@@ -30,7 +32,9 @@ class Command(BaseCommand):
 
             res = requests.get(url, timeout=120)
             if res.status_code != 200:
-                logging.warning("Retrieved status code %d from URL [%s]", res.status_code, url)
+                logging.warning(
+                    "Retrieved status code %d from URL [%s]", res.status_code, url
+                )
                 break
 
             entries = res.json()
@@ -48,7 +52,9 @@ class Command(BaseCommand):
                         break
 
                 if not package_url:
-                    logging.warning("Unable to find Package URL for id #%s", entry.get("id"))
+                    logging.warning(
+                        "Unable to find Package URL for id #%s", entry.get("id")
+                    )
                     continue
 
                 package, _ = Package.objects.get_or_create(package_url=str(package_url))
@@ -60,21 +66,25 @@ class Command(BaseCommand):
 
                     project_id = entry.get("id")
                     if project_id:
-                        metric = Metric(package=package, key=f"openssf.bestpractice.detail-url")
-                        metric.value = (
-                            f"https://bestpractices.coreinfrastructure.org/projects/{project_id}"
+                        metric = Metric(
+                            package=package, key=f"openssf.bestpractice.detail-url"
                         )
+                        metric.value = f"https://bestpractices.coreinfrastructure.org/projects/{project_id}"
                         metric.save()
 
                     for k, v in entry.items():
                         k_name = k.lower().strip()
                         try:
                             metric, _ = Metric.objects.get_or_create(
-                                package=package, key=f"openssf.bestpractice.raw.{k_name}"
+                                package=package,
+                                key=f"openssf.bestpractice.raw.{k_name}",
                             )
                             metric.value = v
                             metric.save()
                         except Exception as msg:
                             logging.warning(
-                                "Failed to save data (%s, %s): %s", package_url, k_name, msg
+                                "Failed to save data (%s, %s): %s",
+                                package_url,
+                                k_name,
+                                msg,
                             )

@@ -50,7 +50,10 @@ class RefreshLibrariesIO(BaseJob):
 
         for version in project.get("versions", []):
             versions_payload["values"].append(
-                {"timestamp": version.get("published_at"), "value": version.get("number")}
+                {
+                    "timestamp": version.get("published_at"),
+                    "value": version.get("number"),
+                }
             )
         payloads.append(versions_payload)
 

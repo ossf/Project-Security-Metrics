@@ -27,7 +27,14 @@ class RefreshSecurityReviews(BaseJob):
         logging.info("Gathering security reviews.")
 
         res = subprocess.check_output(
-            ["git", "clone", "--depth", "1", self.SECURITY_REVIEW_REPO_URL, "security-reviews"]
+            [
+                "git",
+                "clone",
+                "--depth",
+                "1",
+                self.SECURITY_REVIEW_REPO_URL,
+                "security-reviews",
+            ]
         )
 
         if not os.path.isdir("security-reviews"):
@@ -101,7 +108,9 @@ class RefreshSecurityReviews(BaseJob):
                 else:
                     properties[k.strip()] = v.strip()
 
-            self._payload[package_url]["values"].append({"value": value, "properties": properties})
+            self._payload[package_url]["values"].append(
+                {"value": value, "properties": properties}
+            )
 
 
 if __name__ == "__main__":

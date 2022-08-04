@@ -136,10 +136,10 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {
-            "format": u"[%(asctime)s] %(levelname)s [%(module)s.%(funcName)s:%(lineno)s] %(message)s",
+            "format": "[%(asctime)s] %(levelname)s [%(module)s.%(funcName)s:%(lineno)s] %(message)s",
             "datefmt": "%d/%b/%Y %H:%M:%S",
         },
-        "simple": {"format": u"%(levelname)s %(message)s"},
+        "simple": {"format": "%(levelname)s %(message)s"},
     },
     "handlers": {
         "console": {

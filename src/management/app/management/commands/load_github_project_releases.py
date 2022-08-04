@@ -40,7 +40,9 @@ class Command(BaseCommand):
             if package.metric_set.filter(key="openssf.version.github.release").exists():
                 continue
 
-            logging.info("Gathering project releases for [%s]", str(package.package_url))
+            logging.info(
+                "Gathering project releases for [%s]", str(package.package_url)
+            )
 
             package_url = PackageURL.from_string(package.package_url)
             if package_url.type != "github":
@@ -100,7 +102,9 @@ class Command(BaseCommand):
             results = self.client.execute(query)
             versions = results.get("repository", {}).get("refs", {}).get("nodes", [])
             with transaction.atomic():
-                Metric.objects.filter(package=package, key="openssf.version.github.tag").delete()
+                Metric.objects.filter(
+                    package=package, key="openssf.version.github.tag"
+                ).delete()
 
                 metric, _ = Metric.objects.get_or_create(
                     package=package, key="openssf.version.github.tag"
@@ -110,7 +114,9 @@ class Command(BaseCommand):
                 for version in versions:
                     date_ = version.get("target", {}).get("tagger", {}).get("date")
                     if date_:
-                        properties.append({"timestamp": date_, "value": version.get("name")})
+                        properties.append(
+                            {"timestamp": date_, "value": version.get("name")}
+                        )
                 metric.properties = properties
                 metric.save()
 
@@ -121,7 +127,9 @@ class Command(BaseCommand):
                     package=package, key="openssf.version.github.release"
                 )
                 properties = []
-                releases = results.get("repository", {}).get("releases", {}).get("edges", [])
+                releases = (
+                    results.get("repository", {}).get("releases", {}).get("edges", [])
+                )
                 for release in releases:
                     properties.append(
                         {

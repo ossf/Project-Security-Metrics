@@ -50,12 +50,16 @@ class BaseJob:
                 os.environ["PATH"] = os.environ["PATH"] + ":./ossgadget"
                 prefix = "ossgadget/OSSGadget_linux_0.1.260/"
 
-        res = subprocess.check_output([prefix + "oss-find-source", str(self.package_url)])
+        res = subprocess.check_output(
+            [prefix + "oss-find-source", str(self.package_url)]
+        )
         if res:
             repository_url = res.decode("utf-8").split()[1]
             if repository_url.startswith("https://github.com/"):
                 return repository_url
-        logging.warn(f"Unable to identify source code repository for [{self.package_url}]")
+        logging.warn(
+            f"Unable to identify source code repository for [{self.package_url}]"
+        )
         return None
 
     def execute(self):
