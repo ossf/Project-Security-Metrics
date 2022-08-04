@@ -48,7 +48,7 @@ and then re-run `docker-compose -f docker/docker-compose.yml run`. In my testing
 
 ## First Time Usage
 
-Open a web browser to [http://localhost:8000](http://localhost:8000). You should see an 
+Open a web browser to [http://localhost:8000](http://localhost:8000). You should see an
 error message from Django. (This is also a bug that hasn't been fixed yet.)
 
 Now open a web browser to [http://localhost:8000/grafana/](http://localhost:8000/grafana/).
@@ -58,12 +58,12 @@ change the password to whatever you'd like. Now you'll have an empty Grafana ins
 Click on the gear icon on the left and select `Data Sources` / `Add data source`. Choose
 PostgreSQL and use the following details:
 
-* Host: `db`
-* Database: `metricdb` (unless you changed it in `.env.dev.db` above)
-* User: `metricuser` (unless you changed it in `.env.dev.db` above)
-* Password: Use what you specified in `.env.dev.db` above.
-* SSL Mode: `disable`.
-* Version: 12 (though it might work set as other versions too).
+- Host: `db`
+- Database: `metricdb` (unless you changed it in `.env.dev.db` above)
+- User: `metricuser` (unless you changed it in `.env.dev.db` above)
+- Password: Use what you specified in `.env.dev.db` above.
+- SSL Mode: `disable`.
+- Version: 12 (though it might work set as other versions too).
 
 Click `Save & Test`.
 
@@ -109,6 +109,10 @@ to complete. (This is absurdly long, and something that we'll need to fix.)
 Once the process has started, you can immediately access the site. The main URL
 (http://localhost:8000) should work, and Grafana should have some projects populated.
 
+## Committing
+
+Install [pre-commit](https://pre-commit.com/#installation) and the run `pre-commit install` which runs a number of code formatters, linters, and other tools to ensure good code quality for the repo. These are check when PRs are made to the repo
+
 ## Actualy doing development work
 
 The Django application is set up to run from the host machine, so you can immediately edit
@@ -120,8 +124,8 @@ in the running container like we did above.
 If you change an import job, then you'll need to ensure it's properly plumbed together, which
 means:
 
-* Creating the import job in `src/management/app/management/commands/`
-* Adding the job to `docker/web/cron.daily`.
+- Creating the import job in `src/management/app/management/commands/`
+- Adding the job to `docker/web/cron.daily`.
 
 ## Reporting Issues
 
