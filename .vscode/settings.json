@@ -10,7 +10,7 @@
     "workbench.tree.indent": 12,
     "workbench.tree.renderIndentGuides": "always",
     "editor.rulers": [
-        100
+        88
     ],
     "python.linting.flake8Args": [
         "--ignore=E501,W503"
@@ -26,10 +26,6 @@
         "--disable=F0401,C0330",
         "--load-plugins",
         "pylint_django"
-    ],
-    "python.formatting.blackArgs": [
-        "--line-length",
-        "100"
     ],
     "python.analysis.typeCheckingMode": "off",
     "[html]": {
