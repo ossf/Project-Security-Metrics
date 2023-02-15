@@ -11,7 +11,7 @@ charset-normalizer==2.0.10
 click==8.0.3
 colorama==0.4.4
 Deprecated==1.2.13
-Django==4.0.1
+Django==4.1.7
 django-debug-toolbar==3.2.4
 django-redis==5.2.0
 fire==0.4.0
