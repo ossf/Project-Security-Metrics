@@ -39,7 +39,7 @@ regex==2021.11.10
 requests==2.27.1
 Rx==3.2.0
 six==1.16.0
-sqlparse==0.4.2
+sqlparse==0.4.4
 termcolor==1.1.0
 toml==0.10.2
 tomli==1.2.3
