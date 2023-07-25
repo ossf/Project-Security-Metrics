@@ -1,0 +1,48 @@
+name: Build CI
+
+on:
+  push:
+  pull_request:
+  release:
+    types: [published]
+  check_suite:
+    type: [rerequested]
+
+jobs:
+  project-security-metrics-build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2.2.0
+      with:
+        fetch-depth: 0
+    - name: Installs docker
+      run: |
+        sudo mkdir -p /etc/apt/keyrings
+        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+        sudo apt-get update
+        DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy ca-certificates curl gnupg lsb-release
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list
+        sudo apt-get update
+        DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    - name: Installs password generator
+      run: DEBIAN_FRONTEND=noninteractive sudo apt-get install -qy pwgen
+    - name: Sets config files
+      run: |
+        pushd docker
+        for configfile in web/.env.dev.web-example db/.env.dev.db-example worker/.env.dev.worker-example
+        do
+          cp -v $configfile $(echo $configfile | sed 's/-example//')
+        done
+        dbpass=$(pwgen 24 1)
+        djangopass=$(pwgen 24 1)
+        uuid=$(uuidgen)
+        sed -i 's/\<SET A DATABASE PASSWORD\>/$dbpass/g' db/.env.dev.db
+        sed -i 's/\<USE THE SAME PASSWORD YOU CREATED IN docker\/db\/.env.dev.db/$dbpass/g' web/.env.dev.web
+        sed -i 's/\<CREATE A PASSWORD\>/$djangopass/g' web/.env.dev.web
+        sed -i 's/\<CREATE A UUID OR RANDOM STRING\>/$uuid/g' web/.env.dev.web
+        sed -i 's/\<ADD GITHUB ACCESS TOKEN\>/$GITHUB_TOKEN/g' worker/.env.dev.worker
+        popd
+    - name: Docker build and run
+      run: |
+        docker compose -f docker/docker-compose.yml build
+        docker compose -f docker/docker-compose.yml up -d
