@@ -46,7 +46,7 @@ tomli==1.2.3
 typed-ast==1.5.1
 typing-extensions==4.0.1
 tzdata==2021.5
-urllib3==1.26.7
+urllib3==1.26.17
 websockets==10.1
 wrapt==1.13.3
 yarl==1.7.2
